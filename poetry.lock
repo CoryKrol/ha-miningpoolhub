@@ -47,7 +47,7 @@ pytz = "*"
 
 [[package]]
 name = "astroid"
-version = "2.8.3"
+version = "2.8.4"
 description = "An abstract syntax tree for Python with inference support."
 category = "dev"
 optional = false
@@ -70,7 +70,7 @@ python-versions = ">=3.5.3"
 name = "atomicwrites"
 version = "1.4.0"
 description = "Atomic file writes."
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
@@ -231,7 +231,7 @@ hard-encoding-detection = ["chardet"]
 name = "colorama"
 version = "0.4.4"
 description = "Cross-platform colored terminal text."
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
 
@@ -446,7 +446,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 name = "iniconfig"
 version = "1.1.1"
 description = "iniconfig: brain-dead simple config-ini parsing"
-category = "main"
+category = "dev"
 optional = false
 python-versions = "*"
 
@@ -520,7 +520,7 @@ python-versions = "*"
 
 [[package]]
 name = "miningpoolhub-py"
-version = "1.0.5"
+version = "1.0.8"
 description = "An async Python wrapper for the Mining Pool Hub REST API"
 category = "main"
 optional = false
@@ -529,7 +529,6 @@ python-versions = ">=3.8,<4.0"
 [package.dependencies]
 aiohttp = ">=3.7.4,<4.0.0"
 orjson = ">=3.6.4,<4.0.0"
-pytest = ">=6.2.5,<7.0.0"
 python-dotenv = ">=0.19.1,<0.20.0"
 yarl = ">=1.6.3,<2.0.0"
 
@@ -597,7 +596,7 @@ python-versions = ">=3.7"
 name = "packaging"
 version = "21.0"
 description = "Core utilities for Python packages"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.6"
 
@@ -639,7 +638,7 @@ test = ["appdirs (==1.4.4)", "pytest (>=6)", "pytest-cov (>=2.7)", "pytest-mock 
 name = "pluggy"
 version = "1.0.0"
 description = "plugin and hook calling mechanisms for python"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.6"
 
@@ -667,7 +666,7 @@ virtualenv = ">=20.0.8"
 name = "py"
 version = "1.10.0"
 description = "library with cross-python path, ini-parsing, io, code, log facilities"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
@@ -744,7 +743,7 @@ dev = ["isort", "black", "check-manifest", "zest.releaser"]
 name = "pyparsing"
 version = "3.0.1"
 description = "Python parsing module"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.6"
 
@@ -755,7 +754,7 @@ diagrams = ["jinja2", "railroad-diagrams"]
 name = "pytest"
 version = "6.2.5"
 description = "pytest: simple powerful testing with Python"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=3.6"
 
@@ -1113,7 +1112,7 @@ python-versions = "*"
 name = "toml"
 version = "0.10.2"
 description = "Python Library for Tom's Obvious, Minimal Language"
-category = "main"
+category = "dev"
 optional = false
 python-versions = ">=2.6, !=3.0.*, !=3.1.*, !=3.2.*"
 
@@ -1242,7 +1241,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "6605814de2f22db5602192d5b3cdfa66cd273f8b811889e0f2772e6c6308c9cf"
+content-hash = "989f5fb69f908e9e23aad65836b884373e2d3ad9b748e171dd3013c6856d2794"
 
 [metadata.files]
 aiohttp = [
@@ -1293,8 +1292,8 @@ astral = [
     {file = "astral-2.2.tar.gz", hash = "sha256:e41d9967d5c48be421346552f0f4dedad43ff39a83574f5ff2ad32b6627b6fbe"},
 ]
 astroid = [
-    {file = "astroid-2.8.3-py3-none-any.whl", hash = "sha256:f9d66e3a4a0e5b52819b2ff41ac2b179df9d180697db71c92beb33a60c661794"},
-    {file = "astroid-2.8.3.tar.gz", hash = "sha256:0e361da0744d5011d4f5d57e64473ba9b7ab4da1e2d45d6631ebd67dd28c3cce"},
+    {file = "astroid-2.8.4-py3-none-any.whl", hash = "sha256:0755c998e7117078dcb7d0bda621391dd2a85da48052d948c7411ab187325346"},
+    {file = "astroid-2.8.4.tar.gz", hash = "sha256:1e83a69fd51b013ebf5912d26b9338d6643a55fec2f20c787792680610eed4a2"},
 ]
 async-timeout = [
     {file = "async-timeout-3.0.1.tar.gz", hash = "sha256:0c3c816a028d47f659d6ff5c745cb2acf1f966da1fe5c19c77a70282b25f4c5f"},
@@ -1700,8 +1699,8 @@ mccabe = [
     {file = "mccabe-0.6.1.tar.gz", hash = "sha256:dd8d182285a0fe56bace7f45b5e7d1a6ebcbf524e8f3bd87eb0f125271b8831f"},
 ]
 miningpoolhub-py = [
-    {file = "miningpoolhub_py-1.0.5-py3-none-any.whl", hash = "sha256:3be27ad18390fd36dbbe2805e1e7e9c4d2b3f83e376dbafde9ce2b8612eef9fd"},
-    {file = "miningpoolhub_py-1.0.5.tar.gz", hash = "sha256:0909d1275ed8ba0a9452f4e5f28dc1d30aa94e3d29d3298c633abccfd8a47d5d"},
+    {file = "miningpoolhub_py-1.0.8-py3-none-any.whl", hash = "sha256:fe38d32153c765d6024d5c6a5d10548d4babd88e1cacf5ca74463da0cc6b6375"},
+    {file = "miningpoolhub_py-1.0.8.tar.gz", hash = "sha256:c92a145c6bb84e34abb87f9e3093a1079f5cbce51ec4f7811b795442f23a6009"},
 ]
 mock-open = [
     {file = "mock-open-1.4.0.tar.gz", hash = "sha256:c3ecb6b8c32a5899a4f5bf4495083b598b520c698bba00e1ce2ace6e9c239100"},

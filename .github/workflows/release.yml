@@ -1,0 +1,33 @@
+name: Publish to Test PyPI
+on:
+  push:
+    tags:
+      - '*.*.*'
+
+jobs:
+  test_pypi_release:
+    name: Builds Using Poetry and Publishes to TestPyPI
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.9]
+        poetry-version: [1.1.11]
+        os: [ubuntu-18.04]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Run image
+      uses: abatilo/actions-poetry@v2.1.4
+      with:
+        poetry-version: ${{ matrix.poetry-version }}
+    - name: Install venv with Poetry
+      run: poetry install
+    - name: Publish package to TestPyPi
+      run: |
+        poetry config repositories.testpypi https://test.pypi.org/legacy/
+        poetry config pypi-token.testpypi ${{ secrets.TEST_PYPI_API_KEY }}
+        poetry publish --build -r testpypi

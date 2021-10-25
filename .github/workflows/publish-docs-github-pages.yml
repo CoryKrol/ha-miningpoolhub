@@ -1,0 +1,40 @@
+name: Docs2Pages
+on:
+  release:
+    types: [published]
+#on:
+#  push:
+#    tags:
+#      - '*'
+#  pull_request:
+#    branches:
+#      - master
+
+jobs:
+  build-docs:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+    - uses: abatilo/actions-poetry@v2.1.4
+    - name: install
+      run: poetry install -E docs
+    - name: Build documentation
+      run: |
+        mkdir gh-pages
+        touch gh-pages/.nojekyll
+        ./docs/dir.sh
+        poetry run sphinx-apidoc -f -o ./docs/_source miningpoolhub_py
+        poetry run sphinx-build -b html ./docs ./docs/_build
+        cp -r ./docs/_build/* ./gh-pages/
+    - name: Deploy documentation
+      if: ${{ github.event_name == 'push' }}
+      uses: JamesIves/github-pages-deploy-action@4.1.5
+      with:
+        branch: gh-pages
+        folder: gh-pages

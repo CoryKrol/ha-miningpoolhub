@@ -1,0 +1,52 @@
+# This workflow will install Python dependencies, run tests and lint with a variety of Python versions
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-python-with-github-actions
+
+name: CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    types:
+      - opened
+      - edited
+      - synchronize
+
+jobs:
+  build:
+    name: Build, lint, and test on ${{ matrix.python-version }}
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: [3.9]
+        poetry-version: [1.1.11]
+        os: [ubuntu-18.04]
+    runs-on: ${{ matrix.os }}
+    env:
+      COVERAGE_SINGLE: 60
+      COVERAGE_TOTAL: 60
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Run image
+      uses: abatilo/actions-poetry@v2.1.4
+      with:
+        poetry-version: ${{ matrix.poetry-version }}
+    - name: Add test api key to .env file
+      run: echo "MPH_API_KEY=${{ secrets.MPH_API_KEY}}" >> .env
+    - name: Install venv
+      run: poetry install
+    - name: Code Quality
+      run: poetry run black . --check
+    - name: Lint with flake8
+      run: |
+        # stop the build if there are Python syntax errors or undefined names
+        poetry run flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+        # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
+        poetry run flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    - name: Test with pytest
+      run: |
+        poetry run pytest --cov .
