@@ -27,6 +27,7 @@ jobs:
       COVERAGE_TOTAL: 60
     steps:
     - uses: actions/checkout@v2
+    - uses: home-assistant/actions/hassfest@master
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
