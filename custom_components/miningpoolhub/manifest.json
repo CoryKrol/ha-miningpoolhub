@@ -1,0 +1,12 @@
+{
+  "codeowners": ["@CoryKrol"],
+  "config_flow": false,
+  "dependencies": [],
+  "documentation": "https://github.com/CoryKrol/ha-miningpoolhub",
+  "issue_tracker": "https://github.com/CoryKrol/ha-miningpoolhub/issues",
+  "domain": "miningpoolhub",
+  "iot_class": "cloud_polling",
+  "name": "Mining Pool Hub",
+  "requirements": ["miningpoolhub_py==1.0.3"],
+  "version": "0.0.1"
+}
