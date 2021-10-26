@@ -1,0 +1,25 @@
+{
+  "config": {
+    "error": {
+      "auth": "The provided API key is not valid.",
+      "invalid_coin": "Not a valid coin name."
+    },
+    "step": {
+      "user": {
+        "data": {
+          "api_key": "Mining Pool Hub API Key"
+        },
+        "description": "Mining Pool Hub API key.",
+        "title": "Authentication"
+      },
+      "coin": {
+        "data": {
+          "add_another": "Add another coin?",
+          "name": "Name of the coin"
+        },
+        "description": "Add a coin pool, check the box to add another.",
+        "title": "Add Coin"
+      }
+    }
+  }
+}
