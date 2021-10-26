@@ -1,40 +1,36 @@
 """MiningPoolHub sensor platform."""
 import logging
-
-import miningpoolhub_py.exceptions
-from miningpoolhub_py import MiningPoolHubAPI
-from datetime import datetime, date, timedelta
+from datetime import timedelta
 from typing import Any, Callable, Dict, Optional
-from urllib import parse
 
+import homeassistant.helpers.config_validation as cv
+import miningpoolhub_py.exceptions
 import voluptuous as vol
 from aiohttp import ClientError
-
+from aiohttp import ClientResponseError
 from homeassistant.components.sensor import PLATFORM_SCHEMA
 from homeassistant.const import (
     ATTR_NAME,
-    CONF_API_KEY,
-    ATTR_ICON,
-    ATTR_UNIT_OF_MEASUREMENT
+    CONF_API_KEY
 )
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
-import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.typing import (
     ConfigType,
     DiscoveryInfoType,
     HomeAssistantType,
 )
+from miningpoolhub_py import MiningPoolHubAPI
 
 from .const import (
     ATTR_BALANCE_AUTO_EXCHANGE_CONFIRMED,
     ATTR_BALANCE_AUTO_EXCHANGE_UNCONFIRMED,
     ATTR_BALANCE_CONFIRMED,
+    ATTR_BALANCE_ON_EXCHANGE,
     ATTR_BALANCE_UNCONFIRMED,
     ATTR_CURRENT_HASHRATE,
     ATTR_CURRENCY,
     ATTR_INVALID_SHARES,
-    ATTR_LAST_UPDATE,
     ATTR_VALID_SHARES,
     ATTR_RECENT_CREDITS_24_HOURS,
     CONF_CURRENCY_NAMES,
@@ -117,23 +113,23 @@ class MiningPoolHubSensor(Entity):
 
     async def async_update(self):
         try:
-            self.attrs[ATTR_LAST_UPDATE] = datetime.today().strftime("%d-%m-%Y %H:%M")
             dashboard_data = await self.miningpoolhub.async_get_dashboard(self.coin_name)
             self.attrs[ATTR_NAME] = dashboard_data["pool"]["info"]["name"]
-            self.attrs[ATTR_CURRENCY] = dashboard_data["pool"]["info"]["name"]
-            self.attrs[ATTR_CURRENT_HASHRATE] = dashboard_data["personal"]["hashrate"]
-            self.attrs[ATTR_VALID_SHARES] = dashboard_data["personal"]["shares"]["valid"]
-            self.attrs[ATTR_INVALID_SHARES] = dashboard_data["personal"]["shares"]["invalid"]
-            self.attrs[ATTR_BALANCE_CONFIRMED] = dashboard_data["balance"]["confirmed"]
-            self.attrs[ATTR_BALANCE_UNCONFIRMED] = dashboard_data["balance"]["unconfirmed"]
-            self.attrs[ATTR_BALANCE_AUTO_EXCHANGE_CONFIRMED] = dashboard_data["balance_for_auto_exchange"]["confirmed"]
+            self.attrs[ATTR_CURRENCY] = dashboard_data["pool"]["info"]["currency"]
+            self.attrs[ATTR_CURRENT_HASHRATE] = float(dashboard_data["personal"]["hashrate"])
+            self.attrs[ATTR_VALID_SHARES] = int(dashboard_data["personal"]["shares"]["valid"])
+            self.attrs[ATTR_INVALID_SHARES] = int(dashboard_data["personal"]["shares"]["invalid"])
+            self.attrs[ATTR_BALANCE_CONFIRMED] = float(dashboard_data["balance"]["confirmed"])
+            self.attrs[ATTR_BALANCE_UNCONFIRMED] = float(dashboard_data["balance"]["unconfirmed"])
+            self.attrs[ATTR_BALANCE_AUTO_EXCHANGE_CONFIRMED] = \
+                float(dashboard_data["balance_for_auto_exchange"]["confirmed"])
             self.attrs[ATTR_BALANCE_AUTO_EXCHANGE_UNCONFIRMED] = \
-                dashboard_data["balance_for_auto_exchange"]["unconfirmed"]
-            self.attrs[ATTR_RECENT_CREDITS_24_HOURS] = \
-                dashboard_data["balance_on_exchange"]["recent_credits_24hours"]["amount"]
+                float(dashboard_data["balance_for_auto_exchange"]["unconfirmed"])
+            self.attrs[ATTR_BALANCE_ON_EXCHANGE] = float(dashboard_data["balance_on_exchange"])
+            self.attrs[ATTR_RECENT_CREDITS_24_HOURS] = float(dashboard_data["recent_credits_24hours"]["amount"])
 
             self._state = self.attrs[ATTR_CURRENT_HASHRATE]
             self._available = True
-        except (ClientError, miningpoolhub_py.exceptions.APIError):
+        except (ClientError, miningpoolhub_py.exceptions.APIError, ClientResponseError):
             self._available = False
             _LOGGER.exception("Error retrieving data from MiningPoolHub.")
