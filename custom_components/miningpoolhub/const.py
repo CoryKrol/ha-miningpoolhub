@@ -22,4 +22,6 @@ ATTR_SINGLE_COIN_LOCAL_CURRENCY = "single_coin_in_local_currency"
 ATTR_TOTAL_UNPAID_FIAT = "fiat_currency_unpaid_total"
 ATTR_COINS_PER_MINUTE = "coins_per_minute"
 
-COINGECKO_API_ENDPOINT = "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies="
+COINGECKO_API_ENDPOINT = (
+    "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies="
+)

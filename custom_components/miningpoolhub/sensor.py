@@ -9,10 +9,7 @@ import voluptuous as vol
 from aiohttp import ClientError
 from aiohttp import ClientResponseError
 from homeassistant.components.sensor import PLATFORM_SCHEMA
-from homeassistant.const import (
-    ATTR_NAME,
-    CONF_API_KEY
-)
+from homeassistant.const import ATTR_NAME, CONF_API_KEY
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.typing import (
@@ -36,7 +33,7 @@ from .const import (
     CONF_CURRENCY_NAMES,
     CONF_FIAT_CURRENCY,
     SENSOR_PREFIX,
-    DOMAIN
+    DOMAIN,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -47,29 +44,34 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
         vol.Required(CONF_API_KEY): cv.string,
         vol.Required(CONF_CURRENCY_NAMES): vol.All(cv.ensure_list, [cv.string]),
-        vol.Required(CONF_FIAT_CURRENCY): cv.string
+        vol.Required(CONF_FIAT_CURRENCY): cv.string,
     }
 )
 
 
 async def async_setup_platform(
-        hass: HomeAssistantType,
-        config: ConfigType,
-        async_add_entities: Callable,
-        discovery_info: Optional[DiscoveryInfoType] = None,
+    hass: HomeAssistantType,
+    config: ConfigType,
+    async_add_entities: Callable,
+    discovery_info: Optional[DiscoveryInfoType] = None,
 ) -> None:
     """Set up the sensor platform."""
     session = async_get_clientsession(hass)
     miningpoolhub_api = MiningPoolHubAPI(session, api_key=config[CONF_API_KEY])
     fiat_currency = config[CONF_FIAT_CURRENCY]
-    sensors = [MiningPoolHubSensor(miningpoolhub_api, coin, fiat_currency) for coin in config[CONF_CURRENCY_NAMES]]
+    sensors = [
+        MiningPoolHubSensor(miningpoolhub_api, coin, fiat_currency)
+        for coin in config[CONF_CURRENCY_NAMES]
+    ]
     async_add_entities(sensors, update_before_add=True)
 
 
 class MiningPoolHubSensor(Entity):
     """Representation of a Mining Pool Hub Coin sensor."""
 
-    def __init__(self, miningpoolhub_api: MiningPoolHubAPI, coin_name: str, fiat_currency: str):
+    def __init__(
+        self, miningpoolhub_api: MiningPoolHubAPI, coin_name: str, fiat_currency: str
+    ):
         super().__init__()
         self.miningpoolhub_api = miningpoolhub_api
         self.coin_name = coin_name
@@ -114,20 +116,38 @@ class MiningPoolHubSensor(Entity):
 
     async def async_update(self):
         try:
-            dashboard_data = await self.miningpoolhub_api.async_get_dashboard(self.coin_name)
+            dashboard_data = await self.miningpoolhub_api.async_get_dashboard(
+                self.coin_name
+            )
             self.attrs[ATTR_NAME] = dashboard_data["pool"]["info"]["name"]
             self.attrs[ATTR_CURRENCY] = dashboard_data["pool"]["info"]["currency"]
-            self.attrs[ATTR_CURRENT_HASHRATE] = float(dashboard_data["personal"]["hashrate"])
-            self.attrs[ATTR_VALID_SHARES] = int(dashboard_data["personal"]["shares"]["valid"])
-            self.attrs[ATTR_INVALID_SHARES] = int(dashboard_data["personal"]["shares"]["invalid"])
-            self.attrs[ATTR_BALANCE_CONFIRMED] = float(dashboard_data["balance"]["confirmed"])
-            self.attrs[ATTR_BALANCE_UNCONFIRMED] = float(dashboard_data["balance"]["unconfirmed"])
-            self.attrs[ATTR_BALANCE_AUTO_EXCHANGE_CONFIRMED] = \
-                float(dashboard_data["balance_for_auto_exchange"]["confirmed"])
-            self.attrs[ATTR_BALANCE_AUTO_EXCHANGE_UNCONFIRMED] = \
-                float(dashboard_data["balance_for_auto_exchange"]["unconfirmed"])
-            self.attrs[ATTR_BALANCE_ON_EXCHANGE] = float(dashboard_data["balance_on_exchange"])
-            self.attrs[ATTR_RECENT_CREDITS_24_HOURS] = float(dashboard_data["recent_credits_24hours"]["amount"])
+            self.attrs[ATTR_CURRENT_HASHRATE] = float(
+                dashboard_data["personal"]["hashrate"]
+            )
+            self.attrs[ATTR_VALID_SHARES] = int(
+                dashboard_data["personal"]["shares"]["valid"]
+            )
+            self.attrs[ATTR_INVALID_SHARES] = int(
+                dashboard_data["personal"]["shares"]["invalid"]
+            )
+            self.attrs[ATTR_BALANCE_CONFIRMED] = float(
+                dashboard_data["balance"]["confirmed"]
+            )
+            self.attrs[ATTR_BALANCE_UNCONFIRMED] = float(
+                dashboard_data["balance"]["unconfirmed"]
+            )
+            self.attrs[ATTR_BALANCE_AUTO_EXCHANGE_CONFIRMED] = float(
+                dashboard_data["balance_for_auto_exchange"]["confirmed"]
+            )
+            self.attrs[ATTR_BALANCE_AUTO_EXCHANGE_UNCONFIRMED] = float(
+                dashboard_data["balance_for_auto_exchange"]["unconfirmed"]
+            )
+            self.attrs[ATTR_BALANCE_ON_EXCHANGE] = float(
+                dashboard_data["balance_on_exchange"]
+            )
+            self.attrs[ATTR_RECENT_CREDITS_24_HOURS] = float(
+                dashboard_data["recent_credits_24hours"]["amount"]
+            )
 
             self._state = self.attrs[ATTR_CURRENT_HASHRATE]
             self._available = True
