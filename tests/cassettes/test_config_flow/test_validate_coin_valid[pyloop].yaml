@@ -1,0 +1,55 @@
+interactions:
+- request:
+    body: null
+    headers:
+      User-Agent:
+      - HomeAssistant/2021.10.0b1 aiohttp/3.7.4.post0 Python/3.9
+    method: get
+    uri: https://ethereum.miningpoolhub.com/index.php?action=getdashboarddata&page=api
+  response:
+    body:
+      string: '{"getdashboarddata":{"version":"1.0.0","runtime":16.469955444336,"data":{"raw":{"personal":{"hashrate":186115.249},"pool":{"hashrate":20205836502.033},"network":{"hashrate":735203489866.42,"esttimeperblock":14}},"personal":{"hashrate":186.115249,"sharerate":0,"sharedifficulty":0,"shares":{"valid":null,"invalid":null,"invalid_percent":0,"unpaid":0},"estimates":{"block":0,"fee":0,"donation":0,"payout":0}},"balance":{"confirmed":0.05315748,"unconfirmed":0},"balance_for_auto_exchange":{"confirmed":5.287e-5,"unconfirmed":0},"balance_on_exchange":0,"recent_credits_24hours":{"amount":0.0035190134},"recent_credits":[{"date":"2021-10-27","amount":0.0019827948},{"date":"2021-10-26","amount":0.003322445},{"date":"2021-10-25","amount":0.0026515468},{"date":"2021-10-24","amount":0.0033304418},{"date":"2021-10-23","amount":0.0037235982},{"date":"2021-10-22","amount":0.002796969},{"date":"2021-10-21","amount":0.0033964154},{"date":"2021-10-20","amount":0.0029200178},{"date":"2021-10-19","amount":0.0031941336},{"date":"2021-10-18","amount":0.0033600574},{"date":"2021-10-17","amount":0.0035087528},{"date":"2021-10-16","amount":0.0026799178},{"date":"2021-10-15","amount":0.002739688},{"date":"2021-10-14","amount":0.001714706}],"pool":{"info":{"name":"Ethereum
+        (ETH) Mining Pool Hub","currency":"ETH"},"workers":175610,"hashrate":20.205836502033,"shares":{"valid":null,"invalid":null,"invalid_percent":0,"estimated":613501600,"progress":0},"price":"","difficulty":16,"target_bits":20},"system":{"load":[0.89,1.37,1.28]},"network":{"hashrate":735.20348986642,"difficulty":"10292848858129832","block":"13499875","esttimeperblock":14}}}}'
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 6a4c86d7ae2c63e6-ATL
+      Cache-Control:
+      - no-store, no-cache, must-revalidate
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - text/html; charset=UTF-8
+      Date:
+      - Wed, 27 Oct 2021 14:13:44 GMT
+      Expect-CT:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      Expires:
+      - Thu, 19 Nov 1981 08:52:00 GMT
+      NEL:
+      - '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}'
+      Pragma:
+      - no-cache
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v3?s=JM4nI7YBdnSb28klvJYBefSnUc9bDuzJzXPrcj2avVnCqDnR3r3KTPrEYBfw%2FOHf%2BC6yaF6PCQhJVM5ZBb77Abvr8GliQngp4Xi4o6heAr6yE9M2j7Sh3LJYmTYpU%2BtO4RBUxzcj3lV33VjR"}],"group":"cf-nel","max_age":604800}'
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - PHPSESSID=fsmou05qve9ea47nbe4pl6oao1; expires=Sat, 30-Oct-2021 14:13:44 GMT;
+        Max-Age=259200; path=/; domain=.miningpoolhub.com; HttpOnly
+      - AUTH_BEARER_default=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2MzUzNDQwMjQsImp0aSI6InNVZjFqZWFabDR4MTdrbzRHMnFXeTArUEtvWVltT3RSVnVtSG5iN2Jrenc9IiwiaXNzIjoiLmRvdmV3YWxldC5jb20iLCJuYmYiOjE2MzUzNDQwMjQsImV4cCI6MTYzNTYwMzIyNCwiZGF0YSI6IiJ9.vwtiNddsP8F-6kkrrPM7lD93J2tWnON0e8Z0SWLgZChAgAsIi_NlUJKH7gPqclMz19ucvmJBNg4lKzxrog8B3Q;
+        expires=Sat, 30-Oct-2021 14:13:44 GMT; Max-Age=259200; path=/; domain=.miningpoolhub.com;
+        HttpOnly
+      Transfer-Encoding:
+      - chunked
+      alt-svc:
+      - h3=":443"; ma=86400, h3-29=":443"; ma=86400, h3-28=":443"; ma=86400, h3-27=":443";
+        ma=86400
+    status:
+      code: 200
+      message: OK
+    url: https://ethereum.miningpoolhub.com/index.php?page=api&action=getdashboarddata
+version: 1

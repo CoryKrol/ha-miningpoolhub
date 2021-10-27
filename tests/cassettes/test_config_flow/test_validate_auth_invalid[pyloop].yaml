@@ -1,0 +1,52 @@
+interactions:
+- request:
+    body: null
+    headers:
+      User-Agent:
+      - HomeAssistant/2021.10.0b1 aiohttp/3.7.4.post0 Python/3.9
+    method: get
+    uri: https://miningpoolhub.com/index.php?action=getuserallbalances&page=api
+  response:
+    body:
+      string: Access denied
+    headers:
+      CF-Cache-Status:
+      - DYNAMIC
+      CF-RAY:
+      - 6a4c86dbab0f17fb-ATL
+      Cache-Control:
+      - no-store, no-cache, must-revalidate
+      Connection:
+      - keep-alive
+      Content-Type:
+      - text/html; charset=UTF-8
+      Date:
+      - Wed, 27 Oct 2021 14:13:44 GMT
+      Expect-CT:
+      - max-age=604800, report-uri="https://report-uri.cloudflare.com/cdn-cgi/beacon/expect-ct"
+      Expires:
+      - Thu, 19 Nov 1981 08:52:00 GMT
+      NEL:
+      - '{"success_fraction":0,"report_to":"cf-nel","max_age":604800}'
+      Pragma:
+      - no-cache
+      Report-To:
+      - '{"endpoints":[{"url":"https:\/\/a.nel.cloudflare.com\/report\/v3?s=LdcptZvCk1mFqpEbnXuo7tPVwyIgY5fys0ZjpZIWx1FhKMzmHfo2AV1pLAK4hLHMUYQcIwm1jTyeHNkwz5Ohsp7Iey66VTSeW3T5402NLSqaDlGl4qHw5PaeUyZZPCMYusJE"}],"group":"cf-nel","max_age":604800}'
+      Server:
+      - cloudflare
+      Set-Cookie:
+      - PHPSESSID=niquah1shgc84k2c7arp5vgv64; expires=Sat, 30-Oct-2021 14:13:44 GMT;
+        Max-Age=259200; path=/; domain=.miningpoolhub.com; HttpOnly
+      - AUTH_BEARER_default=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzUxMiJ9.eyJpYXQiOjE2MzUzNDQwMjQsImp0aSI6ImNCK3FhdVNhMStiUVwvRmNuZFBKM1k4ZnJmWUlQR3RENjdsQVhLb1RCR1VvPSIsImlzcyI6Ii5kb3Zld2FsZXQuY29tIiwibmJmIjoxNjM1MzQ0MDI0LCJleHAiOjE2MzU2MDMyMjQsImRhdGEiOiIifQ.SbJzAKhww3HJz9goONzFFPypHFMCZKOVxP-a9_JCOqksyf-0XEG2cFB6Bf2oqkp4AlRZbPUuPuCiWpdto4qdRg;
+        expires=Sat, 30-Oct-2021 14:13:44 GMT; Max-Age=259200; path=/; domain=.miningpoolhub.com;
+        HttpOnly
+      Transfer-Encoding:
+      - chunked
+      alt-svc:
+      - h3=":443"; ma=86400, h3-29=":443"; ma=86400, h3-28=":443"; ma=86400, h3-27=":443";
+        ma=86400
+    status:
+      code: 401
+      message: Unauthorized
+    url: https://miningpoolhub.com/index.php?page=api&action=getuserallbalances
+version: 1
