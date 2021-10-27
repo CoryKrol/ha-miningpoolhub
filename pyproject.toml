@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "ha-miningpoolhub"
-version = "0.2.4"
+version = "0.2.5"
 description = "A custom component to plug the miningpoolhub_py API wrapper into Home Assistant"
 authors = ["CoryKrol <16892390+CoryKrol@users.noreply.github.com>"]
 license = "Apache-2.0"
@@ -10,7 +10,7 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.8"
-miningpoolhub-py = "^1.0.11"
+miningpoolhub-py = "^1.0.12"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
