@@ -3,14 +3,15 @@ import logging
 from datetime import timedelta
 from typing import Any, Callable, Dict, Optional
 
-import homeassistant.helpers.config_validation as cv
 import miningpoolhub_py.exceptions
 import voluptuous as vol
 from aiohttp import ClientError
 from aiohttp import ClientResponseError
+from homeassistant import config_entries, core
 from homeassistant.components.sensor import PLATFORM_SCHEMA
 from homeassistant.const import ATTR_NAME, CONF_API_KEY
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
+import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.entity import Entity
 from homeassistant.helpers.typing import (
     ConfigType,
@@ -47,6 +48,22 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
         vol.Required(CONF_FIAT_CURRENCY): cv.string,
     }
 )
+
+
+async def async_setup_entry(
+    hass: core.HomeAssistant,
+    config_entry: config_entries.ConfigEntry,
+    async_add_entities,
+):
+    """Setup sensors from a config entry created in the integrations UI."""
+    config = hass.data[DOMAIN][config_entry.entry_id]
+    session = async_get_clientsession(hass)
+    miningpoolhub_api = MiningPoolHubAPI(session, api_key=config[CONF_API_KEY])
+    sensors = [
+        MiningPoolHubSensor(miningpoolhub_api, coin, config[CONF_FIAT_CURRENCY])
+        for coin in config[CONF_CURRENCY_NAMES]
+    ]
+    async_add_entities(sensors, update_before_add=True)
 
 
 async def async_setup_platform(
