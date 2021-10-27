@@ -43,9 +43,9 @@ async def test_async_update_success(hass, aioclient_mock):
 async def test_async_update_failed():
     """Tests a failed async_update."""
     async with aiohttp.ClientSession() as session:
-        miningpoolhub = MiningPoolHubAPI(session, api_key="bad api_key")
+        miningpoolhub_api = MiningPoolHubAPI(session, api_key="bad api_key")
 
-        sensor = MiningPoolHubSensor(miningpoolhub, "ethereum", "USD")
+        sensor = MiningPoolHubSensor(miningpoolhub_api, "ethereum", "USD")
         await sensor.async_update()
 
         assert sensor.available is False

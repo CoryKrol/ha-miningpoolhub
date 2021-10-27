@@ -36,6 +36,7 @@ from .const import (
     CONF_CURRENCY_NAMES,
     CONF_FIAT_CURRENCY,
     SENSOR_PREFIX,
+    DOMAIN
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -59,18 +60,18 @@ async def async_setup_platform(
 ) -> None:
     """Set up the sensor platform."""
     session = async_get_clientsession(hass)
-    miningpoolhub = MiningPoolHubAPI(session, api_key=config[CONF_API_KEY])
+    miningpoolhub_api = MiningPoolHubAPI(session, api_key=config[CONF_API_KEY])
     fiat_currency = config[CONF_FIAT_CURRENCY]
-    sensors = [MiningPoolHubSensor(miningpoolhub, coin, fiat_currency) for coin in config[CONF_CURRENCY_NAMES]]
+    sensors = [MiningPoolHubSensor(miningpoolhub_api, coin, fiat_currency) for coin in config[CONF_CURRENCY_NAMES]]
     async_add_entities(sensors, update_before_add=True)
 
 
 class MiningPoolHubSensor(Entity):
     """Representation of a Mining Pool Hub Coin sensor."""
 
-    def __init__(self, miningpoolhub: MiningPoolHubAPI, coin_name: str, fiat_currency: str):
+    def __init__(self, miningpoolhub_api: MiningPoolHubAPI, coin_name: str, fiat_currency: str):
         super().__init__()
-        self.miningpoolhub = miningpoolhub
+        self.miningpoolhub_api = miningpoolhub_api
         self.coin_name = coin_name
         self.fiat_currency = fiat_currency
         self.attrs: Dict[str, Any] = {}
@@ -113,7 +114,7 @@ class MiningPoolHubSensor(Entity):
 
     async def async_update(self):
         try:
-            dashboard_data = await self.miningpoolhub.async_get_dashboard(self.coin_name)
+            dashboard_data = await self.miningpoolhub_api.async_get_dashboard(self.coin_name)
             self.attrs[ATTR_NAME] = dashboard_data["pool"]["info"]["name"]
             self.attrs[ATTR_CURRENCY] = dashboard_data["pool"]["info"]["currency"]
             self.attrs[ATTR_CURRENT_HASHRATE] = float(dashboard_data["personal"]["hashrate"])
