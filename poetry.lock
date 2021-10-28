@@ -846,20 +846,6 @@ aiohttp = ">=2.3.5"
 pytest = "*"
 
 [[package]]
-name = "pytest-asyncio"
-version = "0.16.0"
-description = "Pytest support for asyncio."
-category = "dev"
-optional = false
-python-versions = ">= 3.6"
-
-[package.dependencies]
-pytest = ">=5.4.0"
-
-[package.extras]
-testing = ["coverage", "hypothesis (>=5.7.1)"]
-
-[[package]]
 name = "pytest-cov"
 version = "2.12.1"
 description = "Pytest plugin for measuring coverage."
@@ -919,19 +905,6 @@ sqlalchemy = [
 ]
 stdlib-list = "0.7.0"
 tqdm = "4.49.0"
-
-[[package]]
-name = "pytest-recording"
-version = "0.12.0"
-description = "A pytest plugin that allows you recording of network interactions via VCR.py"
-category = "dev"
-optional = false
-python-versions = ">=3.5"
-
-[package.dependencies]
-attrs = "*"
-pytest = ">=3.5.0"
-vcrpy = ">=2.0.1"
 
 [[package]]
 name = "pytest-socket"
@@ -1258,20 +1231,6 @@ secure = ["pyOpenSSL (>=0.14)", "cryptography (>=1.3.4)", "idna (>=2.0.0)", "cer
 socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [[package]]
-name = "vcrpy"
-version = "4.1.1"
-description = "Automatically mock your HTTP interactions to simplify and speed up testing"
-category = "dev"
-optional = false
-python-versions = ">=3.5"
-
-[package.dependencies]
-PyYAML = "*"
-six = ">=1.5"
-wrapt = "*"
-yarl = {version = "*", markers = "python_version >= \"3.6\""}
-
-[[package]]
 name = "virtualenv"
 version = "20.9.0"
 description = "Virtual Python Environment builder"
@@ -1356,7 +1315,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "e8071ef124a97b27038c37448a58fb1a094b9c108ed31c17ca5107ff8173177c"
+content-hash = "2fd2e476211c1a48e12b35c69780d1980224065d2209ad36b5ba083406ccb596"
 
 [metadata.files]
 aiohttp = [
@@ -2007,10 +1966,6 @@ pytest-aiohttp = [
     {file = "pytest-aiohttp-0.3.0.tar.gz", hash = "sha256:c929854339637977375838703b62fef63528598bc0a9d451639eba95f4aaa44f"},
     {file = "pytest_aiohttp-0.3.0-py3-none-any.whl", hash = "sha256:0b9b660b146a65e1313e2083d0d2e1f63047797354af9a28d6b7c9f0726fa33d"},
 ]
-pytest-asyncio = [
-    {file = "pytest-asyncio-0.16.0.tar.gz", hash = "sha256:7496c5977ce88c34379df64a66459fe395cd05543f0a2f837016e7144391fcfb"},
-    {file = "pytest_asyncio-0.16.0-py3-none-any.whl", hash = "sha256:5f2a21273c47b331ae6aa5b36087047b4899e40f03f18397c0e65fa5cca54e9b"},
-]
 pytest-cov = [
     {file = "pytest-cov-2.12.1.tar.gz", hash = "sha256:261ceeb8c227b726249b376b8526b600f38667ee314f910353fa318caa01f4d7"},
     {file = "pytest_cov-2.12.1-py2.py3-none-any.whl", hash = "sha256:261bb9e47e65bd099c89c3edf92972865210c36813f80ede5277dceb77a4a62a"},
@@ -2022,10 +1977,6 @@ pytest-forked = [
 pytest-homeassistant-custom-component = [
     {file = "pytest-homeassistant-custom-component-0.4.6.tar.gz", hash = "sha256:59436d40b24da1100661a601224ecbd96680851c2d2001ef1af527cfd4728317"},
     {file = "pytest_homeassistant_custom_component-0.4.6-py3-none-any.whl", hash = "sha256:18a4ffd08c72ee98f6c27eeee885a6c1b687127c516d13d65a77edf06dec5e60"},
-]
-pytest-recording = [
-    {file = "pytest-recording-0.12.0.tar.gz", hash = "sha256:9039bf488f80c016055ffd039a91e33b1e89f3ee2ee0005c0bbce298fd417ee1"},
-    {file = "pytest_recording-0.12.0-py3-none-any.whl", hash = "sha256:a94b000640fe5d05b34fa9e25dca1671dd7f21195502c5f4d2f600c31dc14f7e"},
 ]
 pytest-socket = [
     {file = "pytest-socket-0.4.1.tar.gz", hash = "sha256:b5abcfd14d9c03e7d4e2875bb5e190af28bf5b4162d0a83e3d7aee6d79f1c85d"},
@@ -2224,10 +2175,6 @@ typing-extensions = [
 urllib3 = [
     {file = "urllib3-1.26.7-py2.py3-none-any.whl", hash = "sha256:c4fdf4019605b6e5423637e01bc9fe4daef873709a7973e195ceba0a62bbc844"},
     {file = "urllib3-1.26.7.tar.gz", hash = "sha256:4987c65554f7a2dbf30c18fd48778ef124af6fab771a377103da0585e2336ece"},
-]
-vcrpy = [
-    {file = "vcrpy-4.1.1-py2.py3-none-any.whl", hash = "sha256:12c3fcdae7b88ecf11fc0d3e6d77586549d4575a2ceee18e82eee75c1f626162"},
-    {file = "vcrpy-4.1.1.tar.gz", hash = "sha256:57095bf22fc0a2d99ee9674cdafebed0f3ba763018582450706f7d3a74fff599"},
 ]
 virtualenv = [
     {file = "virtualenv-20.9.0-py2.py3-none-any.whl", hash = "sha256:1d145deec2da86b29026be49c775cc5a9aab434f85f7efef98307fb3965165de"},

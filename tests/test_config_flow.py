@@ -1,24 +1,23 @@
 """Tests for the config flow."""
-import os
-from dotenv import load_dotenv
 from unittest import mock
 from unittest.mock import AsyncMock
 
-from miningpoolhub_py.exceptions import NotFoundError
+from miningpoolhub_py.exceptions import APIError, NotFoundError
 from homeassistant.const import CONF_API_KEY, CONF_NAME
 import pytest
 from pytest_homeassistant_custom_component.common import patch
 from custom_components.miningpoolhub import config_flow
 from custom_components.miningpoolhub.const import CONF_CURRENCY_NAMES
 
-load_dotenv()
-API_KEY = os.environ.get("MPH_API_KEY", None)
+API_KEY = 'key'
 
 
-@pytest.mark.asyncio
-@pytest.mark.vcr
-async def test_validate_coin_valid(hass):
+@patch("custom_components.miningpoolhub.config_flow.MiningPoolHubAPI")
+async def test_validate_coin_valid(m_miningpoolhubapi, hass):
     """Test no exception is raised for a valid coin."""
+    m_instance = AsyncMock()
+    m_instance.async_get_dashboard = AsyncMock()
+    m_miningpoolhubapi.return_value = m_instance
     await config_flow.validate_coin("ethereum", API_KEY, hass)
 
 
@@ -33,17 +32,23 @@ async def test_validate_coin_invalid(m_miningpoolhubapi, hass):
             await config_flow.validate_coin(bad_path, API_KEY, hass)
 
 
-@pytest.mark.asyncio
-@pytest.mark.vcr
-async def test_validate_auth_valid(hass):
+@patch("custom_components.miningpoolhub.config_flow.MiningPoolHubAPI")
+async def test_validate_auth_valid(m_miningpoolhubapi, hass):
     """Test no exception is raised for valid API key."""
+    m_instance = AsyncMock()
+    m_instance.async_get_dashboard = AsyncMock()
+    m_miningpoolhubapi.return_value = m_instance
     await config_flow.validate_auth(API_KEY, hass)
 
 
-@pytest.mark.asyncio
-@pytest.mark.vcr
-async def test_validate_auth_invalid(hass):
+@patch("custom_components.miningpoolhub.config_flow.MiningPoolHubAPI")
+async def test_validate_auth_invalid(m_miningpoolhubapi, hass):
     """Test ValueError is raised when API key is invalid."""
+    m_instance = AsyncMock()
+    m_instance.async_get_user_all_balances = AsyncMock(
+        side_effect=APIError(AsyncMock())
+    )
+    m_miningpoolhubapi.return_value = m_instance
     with pytest.raises(ValueError):
         await config_flow.validate_auth("token", hass)
 
@@ -123,7 +128,8 @@ async def test_flow_coin_path_invalid(m_validate_coin, hass):
     assert {"base": "invalid_path"} == result["errors"]
 
 
-async def test_flow_coin_add_another(hass):
+@patch("custom_components.miningpoolhub.config_flow.validate_coin")
+async def test_flow_coin_add_another(m_validate_coin, hass):
     """Test we show the coin flow again if the add_another box was checked."""
     config_flow.MiningPoolHubConfigFlow.data = {
         CONF_API_KEY: API_KEY,
