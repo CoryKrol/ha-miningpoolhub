@@ -141,12 +141,13 @@ class MiningPoolHubSensor(Entity):
             self.attrs[ATTR_CURRENT_HASHRATE] = float(
                 dashboard_data["personal"]["hashrate"]
             )
-            self.attrs[ATTR_VALID_SHARES] = int(
-                dashboard_data["personal"]["shares"]["valid"]
-            )
-            self.attrs[ATTR_INVALID_SHARES] = int(
-                dashboard_data["personal"]["shares"]["invalid"]
-            )
+
+            if dashboard_data["personal"]["shares"]["valid"] is not None:
+                self.attrs[ATTR_VALID_SHARES] = int(dashboard_data["personal"]["shares"]["valid"])
+
+            if dashboard_data["personal"]["shares"]["invalid"] is not None:
+                self.attrs[ATTR_INVALID_SHARES] = int(dashboard_data["personal"]["shares"]["invalid"])
+
             self.attrs[ATTR_BALANCE_CONFIRMED] = float(
                 dashboard_data["balance"]["confirmed"]
             )
