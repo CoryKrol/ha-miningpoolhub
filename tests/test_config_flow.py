@@ -9,7 +9,7 @@ from pytest_homeassistant_custom_component.common import patch
 from custom_components.miningpoolhub import config_flow
 from custom_components.miningpoolhub.const import CONF_CURRENCY_NAMES
 
-API_KEY = 'key'
+API_KEY = "key"
 
 
 @patch("custom_components.miningpoolhub.config_flow.MiningPoolHubAPI")
