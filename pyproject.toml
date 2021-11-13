@@ -10,7 +10,7 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.8"
-miningpoolhub-py = "^1.0.14"
+miningpoolhub-py = "^1.0.15"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
