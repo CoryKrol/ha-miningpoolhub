@@ -5,9 +5,9 @@ from unittest.mock import AsyncMock
 from miningpoolhub_py.exceptions import InvalidCoinError, UnauthorizedError
 from homeassistant.const import CONF_API_KEY, CONF_NAME
 import pytest
-from pytest_homeassistant_custom_component.common import patch
+from pytest_homeassistant_custom_component.common import MockConfigEntry, patch
 from custom_components.miningpoolhub import config_flow
-from custom_components.miningpoolhub.const import CONF_CURRENCY_NAMES
+from custom_components.miningpoolhub.const import CONF_CURRENCY_NAMES, DOMAIN
 
 API_KEY = "key"
 
@@ -125,7 +125,7 @@ async def test_flow_coin_path_invalid(m_validate_coin, hass):
     result = await hass.config_entries.flow.async_configure(
         _result["flow_id"], user_input={CONF_NAME: "bad"}
     )
-    assert {"base": "invalid_path"} == result["errors"]
+    assert {"base": "invalid_coin"} == result["errors"]
 
 
 @patch("custom_components.miningpoolhub.config_flow.validate_coin")
@@ -177,3 +177,100 @@ async def test_flow_coin_creates_config_entry(m_validate_coin, hass):
         "result": mock.ANY,
     }
     assert expected == result
+
+
+@patch("custom_components.miningpoolhub.sensor.MiningPoolHubAPI")
+async def test_options_flow_init(m_miningpoolhub, hass):
+    """Test config flow options."""
+    m_instance = AsyncMock()
+    m_instance.async_get_dashboard = AsyncMock()
+    m_miningpoolhub.return_value = m_instance
+
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        unique_id="miningpoolhub_ethereum",
+        data={
+            CONF_API_KEY: "api-key",
+            CONF_CURRENCY_NAMES: [{"name": "ethereum"}],
+        },
+    )
+    config_entry.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(config_entry.entry_id)
+    await hass.async_block_till_done()
+
+    # show initial form
+    result = await hass.config_entries.options.async_init(config_entry.entry_id)
+    assert result["type"] == "form"
+    assert result["step_id"] == "init"
+    assert result["errors"] == {}
+    # Verify multi-select options populated with configured coins.
+    assert result["data_schema"].schema["coins"].options == {"sensor.miningpoolhub_ethereum": "ethereum"}
+
+
+@patch("custom_components.miningpoolhub.sensor.MiningPoolHubAPI")
+async def test_options_flow_remove_repo(m_miningpoolhub, hass):
+    """Test config flow options."""
+    m_instance = AsyncMock()
+    m_instance.async_get_dashboard = AsyncMock()
+    m_miningpoolhub.return_value = m_instance
+
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        unique_id="miningpoolhub_ethereum",
+        data={
+            CONF_API_KEY: "api-key",
+            CONF_CURRENCY_NAMES: [{"name": "doge"}],
+        },
+    )
+    config_entry.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(config_entry.entry_id)
+    await hass.async_block_till_done()
+
+    # show initial form
+    result = await hass.config_entries.options.async_init(config_entry.entry_id)
+    # submit form with options
+    result = await hass.config_entries.options.async_configure(
+        result["flow_id"], user_input={"coins": []}
+    )
+    assert "create_entry" == result["type"]
+    assert "" == result["title"]
+    assert result["result"] is True
+    assert {CONF_CURRENCY_NAMES: []} == result["data"]
+
+
+@patch("custom_components.miningpoolhub.sensor.MiningPoolHubAPI")
+@patch("custom_components.miningpoolhub.config_flow.MiningPoolHubAPI")
+async def test_options_flow_add_repo(m_miningpoolhub, m_miningpoolhub_cf, hass):
+    """Test config flow options."""
+    m_instance = AsyncMock()
+    m_instance.async_get_dashboard = AsyncMock()
+    m_miningpoolhub.return_value = m_instance
+    m_miningpoolhub_cf.return_value = m_instance
+
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        unique_id="miningpoolhub_ethereum",
+        data={
+            CONF_API_KEY: "api-key",
+            CONF_CURRENCY_NAMES: [{"name": "ethereum"}],
+        },
+    )
+    config_entry.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(config_entry.entry_id)
+    await hass.async_block_till_done()
+
+    # show initial form
+    result = await hass.config_entries.options.async_init(config_entry.entry_id)
+    # submit form with options
+    result = await hass.config_entries.options.async_configure(
+        result["flow_id"],
+        user_input={"coins": ["sensor.miningpoolhub_ethereum"], "name": "doge"},
+    )
+    assert "create_entry" == result["type"]
+    assert "" == result["title"]
+    assert result["result"] is True
+    expected_coins = [
+        {"name": "ethereum"},
+        {"name": "doge"},
+    ]
+    assert {CONF_CURRENCY_NAMES: expected_coins} == result["data"]

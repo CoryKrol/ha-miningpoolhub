@@ -14,7 +14,7 @@ miningpoolhub-py = "^1.0.16"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.5"
-pytest-cov = "^2.12.0"
+pytest-cov = "^2.12.1"
 yamllint = "^1.26.3"
 codespell = "^2.1.0"
 safety = "^1.10.3"

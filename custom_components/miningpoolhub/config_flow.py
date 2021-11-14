@@ -1,3 +1,4 @@
+from copy import deepcopy
 import logging
 from typing import Any, Dict, Optional
 
@@ -5,8 +6,13 @@ from miningpoolhub_py.exceptions import InvalidCoinError, UnauthorizedError
 from miningpoolhub_py.miningpoolhubapi import MiningPoolHubAPI
 from homeassistant import config_entries, core
 from homeassistant.const import CONF_API_KEY, CONF_NAME
+from homeassistant.core import callback
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 import homeassistant.helpers.config_validation as cv
+from homeassistant.helpers.entity_registry import (
+    async_entries_for_config_entry,
+    async_get_registry,
+)
 import voluptuous as vol
 
 from .const import CONF_CURRENCY_NAMES, CONF_FIAT_CURRENCY, DOMAIN
@@ -84,7 +90,7 @@ class MiningPoolHubConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
                     user_input[CONF_NAME], self.data[CONF_API_KEY], self.hass
                 )
             except ValueError:
-                errors["base"] = "invalid_path"
+                errors["base"] = "invalid_coin"
 
             if not errors:
                 # Input is valid, set data.
@@ -99,4 +105,88 @@ class MiningPoolHubConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
         return self.async_show_form(
             step_id="coin", data_schema=CURRENCY_NAME_SCHEMA, errors=errors
+        )
+
+    @staticmethod
+    @callback
+    def async_get_options_flow(config_entry):
+        """Get the options flow for this handler."""
+        return OptionsFlowHandler(config_entry)
+
+
+class OptionsFlowHandler(config_entries.OptionsFlow):
+    """Handles options flow for the component."""
+
+    def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
+        self.config_entry = config_entry
+
+    async def async_step_init(
+        self, user_input: Dict[str, Any] = None
+    ) -> Dict[str, Any]:
+        """Manage the options for the custom component."""
+        # TODO: Left on here debugging
+        errors: Dict[str, str] = {}
+        # Grab all configured pools from the entity registry so we can populate the
+        # multi-select dropdown that will allow a user to remove a mining pool.
+        entity_registry = await async_get_registry(self.hass)
+        entries = async_entries_for_config_entry(
+            entity_registry, self.config_entry.entry_id
+        )
+        # Default value for our multi-select.
+        all_coins = {e.entity_id: e.original_name for e in entries}
+        coin_map = {e.entity_id: e for e in entries}
+
+        if user_input is not None:
+            updated_coins = deepcopy(self.config_entry.data[CONF_CURRENCY_NAMES])
+
+            # Remove any unchecked coins.
+            removed_entities = [
+                entity_id
+                for entity_id in coin_map.keys()
+                if entity_id not in user_input["coins"]
+            ]
+            for entity_id in removed_entities:
+                # Unregister from HA
+                entity_registry.async_remove(entity_id)
+                # Remove from our configured coins.
+                entry = coin_map[entity_id]
+                entry_name = entry.unique_id
+                updated_coins = [e for e in updated_coins if e["name"] != entry_name]
+
+            if user_input.get(CONF_NAME):
+                # Validate the coin.
+                api_key = self.hass.data[DOMAIN][self.config_entry.entry_id][
+                    CONF_API_KEY
+                ]
+                try:
+                    await validate_coin(user_input[CONF_NAME], api_key, self.hass)
+                except ValueError:
+                    errors["base"] = "invalid_coin"
+
+                if not errors:
+                    # Add the new repo.
+                    updated_coins.append(
+                        {
+                            "name": user_input.get(CONF_NAME),
+                        }
+                    )
+
+            if not errors:
+                # Value of data will be set on the options property of our config_entry
+                # instance.
+                return self.async_create_entry(
+                    title="",
+                    data={CONF_CURRENCY_NAMES: updated_coins},
+                )
+
+        options_schema = vol.Schema(
+            {
+                vol.Optional("coins", default=list(all_coins.keys())): cv.multi_select(
+                    all_coins
+                ),
+                vol.Optional(CONF_NAME): cv.string,
+            }
+        )
+        return self.async_show_form(
+            step_id="init", data_schema=options_schema, errors=errors
         )
