@@ -7,7 +7,11 @@ from homeassistant.const import CONF_API_KEY, CONF_NAME
 import pytest
 from pytest_homeassistant_custom_component.common import MockConfigEntry, patch
 from custom_components.miningpoolhub import config_flow
-from custom_components.miningpoolhub.const import CONF_CURRENCY_NAMES, DOMAIN, CONF_FIAT_CURRENCY
+from custom_components.miningpoolhub.const import (
+    CONF_CURRENCY_NAMES,
+    DOMAIN,
+    CONF_FIAT_CURRENCY,
+)
 
 API_KEY = "key"
 
@@ -25,7 +29,9 @@ async def test_validate_coin_valid(m_miningpoolhubapi, hass):
 async def test_validate_coin_invalid(m_miningpoolhubapi, hass):
     """Test a ValueError is raised when the coin is not valid."""
     m_instance = AsyncMock()
-    m_instance.async_get_dashboard = AsyncMock(side_effect=InvalidCoinError(AsyncMock()))
+    m_instance.async_get_dashboard = AsyncMock(
+        side_effect=InvalidCoinError(AsyncMock())
+    )
     m_miningpoolhubapi.return_value = m_instance
     for bad_coin in ("dollarcoin", "bitdollar"):
         with pytest.raises(ValueError):
@@ -204,7 +210,9 @@ async def test_options_flow_init(m_miningpoolhub, hass):
     assert result["step_id"] == "init"
     assert result["errors"] == {}
     # Verify multi-select options populated with configured coins.
-    assert result["data_schema"].schema["coins"].options == {"sensor.miningpoolhub_ethereum": "ethereum"}
+    assert result["data_schema"].schema["coins"].options == {
+        "sensor.miningpoolhub_ethereum": "ethereum"
+    }
 
 
 @patch("custom_components.miningpoolhub.sensor.MiningPoolHubAPI")

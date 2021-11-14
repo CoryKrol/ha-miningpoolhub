@@ -20,7 +20,10 @@ from .const import CONF_CURRENCY_NAMES, CONF_FIAT_CURRENCY, DOMAIN
 _LOGGER = logging.getLogger(__name__)
 
 AUTH_SCHEMA = vol.Schema(
-    {vol.Required(CONF_API_KEY): cv.string, vol.Optional(CONF_FIAT_CURRENCY, default="USD"): cv.string}
+    {
+        vol.Required(CONF_API_KEY): cv.string,
+        vol.Optional(CONF_FIAT_CURRENCY, default="USD"): cv.string,
+    }
 )
 CURRENCY_NAME_SCHEMA = vol.Schema(
     {
