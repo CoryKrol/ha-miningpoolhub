@@ -57,6 +57,9 @@ async def async_setup_entry(
 ):
     """Setup sensors from a config entry created in the integrations UI."""
     config = hass.data[DOMAIN][config_entry.entry_id]
+    # Update our config to include new coins and remove those that have been removed.
+    if config_entry.options:
+        config.update(config_entry.options)
     session = async_get_clientsession(hass)
     miningpoolhub_api = MiningPoolHubAPI(session, api_key=config[CONF_API_KEY])
     sensors = [
@@ -95,7 +98,7 @@ class MiningPoolHubSensor(Entity):
         self.fiat_currency = fiat_currency
         self.attrs: Dict[str, Any] = {}
         self._icon = "mdi:ethereum" if coin_name == "ethereum" else None
-        self._name = SENSOR_PREFIX + self.coin_name
+        self._name = SENSOR_PREFIX + self.coin_name.title()
         self._state = None
         self._unit_of_measurement = "\u200b"
         self._available = True
@@ -175,4 +178,6 @@ class MiningPoolHubSensor(Entity):
             self._available = True
         except (ClientError, miningpoolhub_py.exceptions.APIError, ClientResponseError):
             self._available = False
-            _LOGGER.exception("Error retrieving data from MiningPoolHub.")
+            _LOGGER.exception(
+                "Error retrieving data from MiningPoolHub for sensor %s.", self.name
+            )

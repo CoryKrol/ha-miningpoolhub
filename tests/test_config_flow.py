@@ -7,7 +7,7 @@ from homeassistant.const import CONF_API_KEY, CONF_NAME
 import pytest
 from pytest_homeassistant_custom_component.common import MockConfigEntry, patch
 from custom_components.miningpoolhub import config_flow
-from custom_components.miningpoolhub.const import CONF_CURRENCY_NAMES, DOMAIN
+from custom_components.miningpoolhub.const import CONF_CURRENCY_NAMES, DOMAIN, CONF_FIAT_CURRENCY
 
 API_KEY = "key"
 
@@ -27,9 +27,9 @@ async def test_validate_coin_invalid(m_miningpoolhubapi, hass):
     m_instance = AsyncMock()
     m_instance.async_get_dashboard = AsyncMock(side_effect=InvalidCoinError(AsyncMock()))
     m_miningpoolhubapi.return_value = m_instance
-    for bad_path in ("dollarcoin", "bitdollar"):
+    for bad_coin in ("dollarcoin", "bitdollar"):
         with pytest.raises(ValueError):
-            await config_flow.validate_coin(bad_path, API_KEY, hass)
+            await config_flow.validate_coin(bad_coin, API_KEY, hass)
 
 
 @patch("custom_components.miningpoolhub.config_flow.MiningPoolHubAPI")
@@ -81,7 +81,7 @@ async def test_flow_user_init_invalid_api_key(m_validate_auth, hass):
     result = await hass.config_entries.flow.async_configure(
         _result["flow_id"], user_input={CONF_API_KEY: "bad"}
     )
-    assert {"base": "auth"} == result["errors"]
+    assert result["errors"] == {"base": "auth"}
 
 
 @patch("custom_components.miningpoolhub.config_flow.validate_auth")
@@ -93,8 +93,8 @@ async def test_flow_user_init_data_valid(m_validate_auth, hass):
     result = await hass.config_entries.flow.async_configure(
         _result["flow_id"], user_input={CONF_API_KEY: "good"}
     )
-    assert "coin" == result["step_id"]
-    assert "form" == result["type"]
+    assert result["step_id"] == "coin"
+    assert result["type"] == "form"
 
 
 async def test_flow_coin_init_form(hass):
@@ -112,7 +112,7 @@ async def test_flow_coin_init_form(hass):
         "step_id": "coin",
         "type": "form",
     }
-    assert expected == result
+    assert result == expected
 
 
 @patch("custom_components.miningpoolhub.config_flow.validate_coin")
@@ -125,7 +125,7 @@ async def test_flow_coin_path_invalid(m_validate_coin, hass):
     result = await hass.config_entries.flow.async_configure(
         _result["flow_id"], user_input={CONF_NAME: "bad"}
     )
-    assert {"base": "invalid_coin"} == result["errors"]
+    assert result["errors"] == {"base": "invalid_coin"}
 
 
 @patch("custom_components.miningpoolhub.config_flow.validate_coin")
@@ -142,9 +142,8 @@ async def test_flow_coin_add_another(m_validate_coin, hass):
         _result["flow_id"],
         user_input={CONF_NAME: "ethereum", "add_another": True},
     )
-    print(result)
-    assert "coin" == result["step_id"]
-    assert "form" == result["type"]
+    assert result["step_id"] == "coin"
+    assert result["type"] == "form"
 
 
 @patch("custom_components.miningpoolhub.config_flow.validate_coin")
@@ -176,7 +175,7 @@ async def test_flow_coin_creates_config_entry(m_validate_coin, hass):
         "description_placeholders": None,
         "result": mock.ANY,
     }
-    assert expected == result
+    assert result == expected
 
 
 @patch("custom_components.miningpoolhub.sensor.MiningPoolHubAPI")
@@ -191,7 +190,8 @@ async def test_options_flow_init(m_miningpoolhub, hass):
         unique_id="miningpoolhub_ethereum",
         data={
             CONF_API_KEY: "api-key",
-            CONF_CURRENCY_NAMES: [{"name": "ethereum"}],
+            CONF_FIAT_CURRENCY: "USD",
+            CONF_CURRENCY_NAMES: ["ethereum"],
         },
     )
     config_entry.add_to_hass(hass)
@@ -208,7 +208,7 @@ async def test_options_flow_init(m_miningpoolhub, hass):
 
 
 @patch("custom_components.miningpoolhub.sensor.MiningPoolHubAPI")
-async def test_options_flow_remove_repo(m_miningpoolhub, hass):
+async def test_options_flow_remove_coin(m_miningpoolhub, hass):
     """Test config flow options."""
     m_instance = AsyncMock()
     m_instance.async_get_dashboard = AsyncMock()
@@ -219,7 +219,8 @@ async def test_options_flow_remove_repo(m_miningpoolhub, hass):
         unique_id="miningpoolhub_ethereum",
         data={
             CONF_API_KEY: "api-key",
-            CONF_CURRENCY_NAMES: [{"name": "doge"}],
+            CONF_FIAT_CURRENCY: "USD",
+            CONF_CURRENCY_NAMES: ["ethereum"],
         },
     )
     config_entry.add_to_hass(hass)
@@ -232,15 +233,15 @@ async def test_options_flow_remove_repo(m_miningpoolhub, hass):
     result = await hass.config_entries.options.async_configure(
         result["flow_id"], user_input={"coins": []}
     )
-    assert "create_entry" == result["type"]
-    assert "" == result["title"]
+    assert result["type"] == "create_entry"
+    assert result["title"] == ""
     assert result["result"] is True
-    assert {CONF_CURRENCY_NAMES: []} == result["data"]
+    assert result["data"] == {CONF_CURRENCY_NAMES: []}
 
 
 @patch("custom_components.miningpoolhub.sensor.MiningPoolHubAPI")
 @patch("custom_components.miningpoolhub.config_flow.MiningPoolHubAPI")
-async def test_options_flow_add_repo(m_miningpoolhub, m_miningpoolhub_cf, hass):
+async def test_options_flow_add_coin(m_miningpoolhub, m_miningpoolhub_cf, hass):
     """Test config flow options."""
     m_instance = AsyncMock()
     m_instance.async_get_dashboard = AsyncMock()
@@ -252,7 +253,8 @@ async def test_options_flow_add_repo(m_miningpoolhub, m_miningpoolhub_cf, hass):
         unique_id="miningpoolhub_ethereum",
         data={
             CONF_API_KEY: "api-key",
-            CONF_CURRENCY_NAMES: [{"name": "ethereum"}],
+            CONF_FIAT_CURRENCY: "USD",
+            CONF_CURRENCY_NAMES: ["ethereum"],
         },
     )
     config_entry.add_to_hass(hass)
@@ -266,11 +268,11 @@ async def test_options_flow_add_repo(m_miningpoolhub, m_miningpoolhub_cf, hass):
         result["flow_id"],
         user_input={"coins": ["sensor.miningpoolhub_ethereum"], "name": "doge"},
     )
-    assert "create_entry" == result["type"]
-    assert "" == result["title"]
+    assert result["type"] == "create_entry"
+    assert result["title"] == ""
     assert result["result"] is True
     expected_coins = [
-        {"name": "ethereum"},
-        {"name": "doge"},
+        "ethereum",
+        "doge",
     ]
-    assert {CONF_CURRENCY_NAMES: expected_coins} == result["data"]
+    assert result["data"] == {CONF_CURRENCY_NAMES: expected_coins}

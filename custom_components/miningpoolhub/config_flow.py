@@ -20,7 +20,7 @@ from .const import CONF_CURRENCY_NAMES, CONF_FIAT_CURRENCY, DOMAIN
 _LOGGER = logging.getLogger(__name__)
 
 AUTH_SCHEMA = vol.Schema(
-    {vol.Required(CONF_API_KEY): cv.string, vol.Optional(CONF_FIAT_CURRENCY): cv.string}
+    {vol.Required(CONF_API_KEY): cv.string, vol.Optional(CONF_FIAT_CURRENCY, default="USD"): cv.string}
 )
 CURRENCY_NAME_SCHEMA = vol.Schema(
     {
@@ -33,8 +33,21 @@ OPTIONS_SCHEMA = vol.Schema({vol.Optional(CONF_NAME, default="foo"): cv.string})
 
 
 async def validate_coin(coin: str, api_key: str, hass: core.HomeAssistant) -> None:
-    """Validates a coin.
-    Raises a ValueError if the coin is invalid.
+    """Validates a coin
+
+    Parameters
+    ----------
+    coin : str
+        Coin name
+    api_key : str
+        MiningPoolHub API key
+    hass : core.HomeAssistant
+        hass instance
+
+    Raises
+    ------
+    ValueError
+        if the coin is invalid
     """
     session = async_get_clientsession(hass)
     miningpoolhubapi = MiningPoolHubAPI(session, api_key=api_key)
@@ -46,7 +59,18 @@ async def validate_coin(coin: str, api_key: str, hass: core.HomeAssistant) -> No
 
 async def validate_auth(api_key: str, hass: core.HomeAssistant) -> None:
     """Validates a Mining Pool Hub API key.
-    Raises a ValueError if the API key is invalid.
+
+    Parameters
+    ----------
+    api_key : str
+        MiningPoolHub API key
+    hass : core.HomeAssistant
+        hass instance
+
+    Raises
+    ------
+    ValueError
+        if the API key is invalid
     """
     session = async_get_clientsession(hass)
     miningpoolhubapi = MiningPoolHubAPI(session, api_key=api_key)
@@ -124,7 +148,6 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         self, user_input: Dict[str, Any] = None
     ) -> Dict[str, Any]:
         """Manage the options for the custom component."""
-        # TODO: Left on here debugging
         errors: Dict[str, str] = {}
         # Grab all configured pools from the entity registry so we can populate the
         # multi-select dropdown that will allow a user to remove a mining pool.
@@ -133,7 +156,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             entity_registry, self.config_entry.entry_id
         )
         # Default value for our multi-select.
-        all_coins = {e.entity_id: e.original_name for e in entries}
+        all_coins = {e.entity_id: e.original_name[14:].lower() for e in entries}
         coin_map = {e.entity_id: e for e in entries}
 
         if user_input is not None:
@@ -151,7 +174,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                 # Remove from our configured coins.
                 entry = coin_map[entity_id]
                 entry_name = entry.unique_id
-                updated_coins = [e for e in updated_coins if e["name"] != entry_name]
+                updated_coins = [e for e in updated_coins if e != entry_name]
 
             if user_input.get(CONF_NAME):
                 # Validate the coin.
@@ -165,11 +188,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
 
                 if not errors:
                     # Add the new repo.
-                    updated_coins.append(
-                        {
-                            "name": user_input.get(CONF_NAME),
-                        }
-                    )
+                    updated_coins.append(user_input.get(CONF_NAME))
 
             if not errors:
                 # Value of data will be set on the options property of our config_entry

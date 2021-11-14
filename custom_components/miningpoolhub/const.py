@@ -3,7 +3,7 @@ DOMAIN = "miningpoolhub"
 CONF_CURRENCY_NAMES = "currency_names"
 CONF_FIAT_CURRENCY = "fiat_currency"
 
-SENSOR_PREFIX = "MiningPoolHub  "
+SENSOR_PREFIX = "MiningPoolHub "
 
 ATTR_ACTIVE_WORKERS = "active_workers"
 ATTR_AVERAGE_HASHRATE_24h = "average_hashrate_24h"
