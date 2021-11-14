@@ -1,7 +1,7 @@
 import logging
 from typing import Any, Dict, Optional
 
-from miningpoolhub_py.exceptions import APIError, NotFoundError
+from miningpoolhub_py.exceptions import InvalidCoinError, UnauthorizedError
 from miningpoolhub_py.miningpoolhubapi import MiningPoolHubAPI
 from homeassistant import config_entries, core
 from homeassistant.const import CONF_API_KEY, CONF_NAME
@@ -34,7 +34,7 @@ async def validate_coin(coin: str, api_key: str, hass: core.HomeAssistant) -> No
     miningpoolhubapi = MiningPoolHubAPI(session, api_key=api_key)
     try:
         await miningpoolhubapi.async_get_dashboard(coin_name=coin)
-    except NotFoundError:
+    except InvalidCoinError:
         raise ValueError
 
 
@@ -46,7 +46,7 @@ async def validate_auth(api_key: str, hass: core.HomeAssistant) -> None:
     miningpoolhubapi = MiningPoolHubAPI(session, api_key=api_key)
     try:
         await miningpoolhubapi.async_get_user_all_balances()
-    except APIError:
+    except UnauthorizedError:
         raise ValueError
 
 

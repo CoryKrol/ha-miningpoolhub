@@ -2,7 +2,7 @@
 from unittest import mock
 from unittest.mock import AsyncMock
 
-from miningpoolhub_py.exceptions import APIError, NotFoundError
+from miningpoolhub_py.exceptions import InvalidCoinError, UnauthorizedError
 from homeassistant.const import CONF_API_KEY, CONF_NAME
 import pytest
 from pytest_homeassistant_custom_component.common import patch
@@ -25,7 +25,7 @@ async def test_validate_coin_valid(m_miningpoolhubapi, hass):
 async def test_validate_coin_invalid(m_miningpoolhubapi, hass):
     """Test a ValueError is raised when the coin is not valid."""
     m_instance = AsyncMock()
-    m_instance.async_get_dashboard = AsyncMock(side_effect=NotFoundError(AsyncMock()))
+    m_instance.async_get_dashboard = AsyncMock(side_effect=InvalidCoinError(AsyncMock()))
     m_miningpoolhubapi.return_value = m_instance
     for bad_path in ("dollarcoin", "bitdollar"):
         with pytest.raises(ValueError):
@@ -46,7 +46,7 @@ async def test_validate_auth_invalid(m_miningpoolhubapi, hass):
     """Test ValueError is raised when API key is invalid."""
     m_instance = AsyncMock()
     m_instance.async_get_user_all_balances = AsyncMock(
-        side_effect=APIError(AsyncMock())
+        side_effect=UnauthorizedError(AsyncMock())
     )
     m_miningpoolhubapi.return_value = m_instance
     with pytest.raises(ValueError):

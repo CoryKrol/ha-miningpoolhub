@@ -551,7 +551,7 @@ python-versions = "*"
 
 [[package]]
 name = "miningpoolhub-py"
-version = "1.0.15"
+version = "1.0.16"
 description = "An async Python wrapper for the Mining Pool Hub REST API"
 category = "main"
 optional = false
@@ -1312,7 +1312,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "76bddb7f8fe6babe5a694b5e1b36358fb994ed5adfce69ca64dc3ecdde32b5df"
+content-hash = "039549ecb0eeda3af3005f0299dac9f3eb6f1df62dd5f39d5f2153a39b83915d"
 
 [metadata.files]
 aiohttp = [
@@ -1775,8 +1775,8 @@ mccabe = [
     {file = "mccabe-0.6.1.tar.gz", hash = "sha256:dd8d182285a0fe56bace7f45b5e7d1a6ebcbf524e8f3bd87eb0f125271b8831f"},
 ]
 miningpoolhub-py = [
-    {file = "miningpoolhub_py-1.0.15-py3-none-any.whl", hash = "sha256:8076f29d0414baa0dd886576e6526cafa011c61fea018b7c4e6e2090d5d4e06a"},
-    {file = "miningpoolhub_py-1.0.15.tar.gz", hash = "sha256:52b0f9dd031cb2a580a78ce372966e9ed2ee98817b40c9ea2d164501ac92c394"},
+    {file = "miningpoolhub_py-1.0.16-py3-none-any.whl", hash = "sha256:a1f658c6d53f562148020c16f69263e2c1f22b2829953300741bff06a9c91e56"},
+    {file = "miningpoolhub_py-1.0.16.tar.gz", hash = "sha256:f4c661bb6178778020a3d7b9c99bc918ce52ca09117f14c607936baeb9594a3b"},
 ]
 mock-open = [
     {file = "mock-open-1.4.0.tar.gz", hash = "sha256:c3ecb6b8c32a5899a4f5bf4495083b598b520c698bba00e1ce2ace6e9c239100"},
