@@ -4,6 +4,3 @@ This repo contains a custom component for [Home Assistant](https://www.home-assi
 miner statistics from [Mining Pool Hub](https://miningpoolhub.com/) using the
 [miningpoolhub_py](https://github.com/CoryKrol/miningpoolhub_py) Python wrapper
 ## Installation
-
-## Record Cassettes
-`poetry run pytest --record-mode=once`
