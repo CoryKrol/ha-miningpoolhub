@@ -69,6 +69,7 @@ async def async_setup_entry(
     async_add_entities(sensors, update_before_add=True)
 
 
+# noinspection PyUnusedLocal
 async def async_setup_platform(
     hass: HomeAssistantType,
     config: ConfigType,

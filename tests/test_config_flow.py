@@ -90,6 +90,7 @@ async def test_flow_user_init_invalid_api_key(m_validate_auth, hass):
     assert result["errors"] == {"base": "auth"}
 
 
+# noinspection PyUnusedLocal
 @patch("custom_components.miningpoolhub.config_flow.validate_auth")
 async def test_flow_user_init_data_valid(m_validate_auth, hass):
     """Test we advance to the next step when data is valid."""
@@ -134,6 +135,7 @@ async def test_flow_coin_path_invalid(m_validate_coin, hass):
     assert result["errors"] == {"base": "invalid_coin"}
 
 
+# noinspection PyUnusedLocal
 @patch("custom_components.miningpoolhub.config_flow.validate_coin")
 async def test_flow_coin_add_another(m_validate_coin, hass):
     """Test we show the coin flow again if the add_another box was checked."""
@@ -152,6 +154,7 @@ async def test_flow_coin_add_another(m_validate_coin, hass):
     assert result["type"] == "form"
 
 
+# noinspection PyUnusedLocal
 @patch("custom_components.miningpoolhub.config_flow.validate_coin")
 async def test_flow_coin_creates_config_entry(m_validate_coin, hass):
     """Test the config entry is successfully created."""

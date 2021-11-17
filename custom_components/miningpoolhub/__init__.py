@@ -54,6 +54,7 @@ async def async_unload_entry(
     return unload_ok
 
 
+# noinspection PyUnusedLocal
 async def async_setup(hass: core.HomeAssistant, config: dict) -> bool:
     """Set up the Mining Pool Hub component from yaml configuration."""
     hass.data.setdefault(DOMAIN, {})
