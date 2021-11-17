@@ -172,9 +172,6 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                 if entity_id not in user_input["coins"]
             ]
 
-            if len(updated_coins) == len(removed_entities):
-                errors["base"] = "cannot_remove_all"
-
             for entity_id in removed_entities:
                 # Unregister from HA
                 entity_registry.async_remove(entity_id)
