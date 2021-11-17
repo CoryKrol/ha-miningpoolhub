@@ -211,7 +211,7 @@ async def test_options_flow_init(m_miningpoolhub, hass):
     assert result["errors"] == {}
     # Verify multi-select options populated with configured coins.
     assert result["data_schema"].schema["coins"].options == {
-        "sensor.miningpoolhub_ethereum": "ethereum"
+        "sensor.miningpoolhub_ethereum": "Ethereum"
     }
 
 

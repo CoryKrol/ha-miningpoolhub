@@ -121,7 +121,7 @@ class MiningPoolHubConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
 
             if not errors:
                 # Input is valid, set data.
-                self.data[CONF_CURRENCY_NAMES].append(user_input[CONF_NAME])
+                self.data[CONF_CURRENCY_NAMES].append(user_input[CONF_NAME].lower())
                 # If user ticked the box show this form again so they can add an
                 # additional coins.
                 if user_input.get("add_another", False):
@@ -171,9 +171,14 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                 for entity_id in coin_map.keys()
                 if entity_id not in user_input["coins"]
             ]
+
+            if len(updated_coins) == len(removed_entities):
+                errors["base"] = "cannot_remove_all"
+
             for entity_id in removed_entities:
                 # Unregister from HA
                 entity_registry.async_remove(entity_id)
+
                 # Remove from our configured coins.
                 entry = coin_map[entity_id]
                 entry_name = entry.unique_id
@@ -191,11 +196,10 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
 
                 if not errors:
                     # Add the new repo.
-                    updated_coins.append(user_input.get(CONF_NAME))
+                    updated_coins.append(user_input.get(CONF_NAME).lower())
 
             if not errors:
-                # Value of data will be set on the options property of our config_entry
-                # instance.
+                # Value of data will be set on the options property of our config_entry instance.
                 return self.async_create_entry(
                     title="",
                     data={CONF_CURRENCY_NAMES: updated_coins},

@@ -1,4 +1,4 @@
-"""Mining Pool Hub Custom Component """
+"""Mining Pool Hub Custom Component"""
 import asyncio
 import logging
 
