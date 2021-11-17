@@ -39,7 +39,7 @@ from .const import (
 
 _LOGGER = logging.getLogger(__name__)
 # Time between updating data from MiningPoolHub
-SCAN_INTERVAL = timedelta(minutes=10)
+SCAN_INTERVAL = timedelta(minutes=2)
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
