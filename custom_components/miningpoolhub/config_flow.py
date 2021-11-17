@@ -159,7 +159,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             entity_registry, self.config_entry.entry_id
         )
         # Default value for our multi-select.
-        all_coins = {e.entity_id: e.original_name[14:].lower() for e in entries}
+        all_coins = {e.entity_id: e.original_name[14:] for e in entries}
         coin_map = {e.entity_id: e for e in entries}
 
         if user_input is not None:
