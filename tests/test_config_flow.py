@@ -1,24 +1,27 @@
 """Tests for the config flow."""
-import os
-from dotenv import load_dotenv
 from unittest import mock
 from unittest.mock import AsyncMock
 
-from miningpoolhub_py.exceptions import NotFoundError
+from miningpoolhub_py.exceptions import InvalidCoinError, UnauthorizedError
 from homeassistant.const import CONF_API_KEY, CONF_NAME
 import pytest
-from pytest_homeassistant_custom_component.common import patch
+from pytest_homeassistant_custom_component.common import MockConfigEntry, patch
 from custom_components.miningpoolhub import config_flow
-from custom_components.miningpoolhub.const import CONF_CURRENCY_NAMES
+from custom_components.miningpoolhub.const import (
+    CONF_CURRENCY_NAMES,
+    DOMAIN,
+    CONF_FIAT_CURRENCY,
+)
 
-load_dotenv()
-API_KEY = os.environ.get("MPH_API_KEY", None)
+API_KEY = "key"
 
 
-@pytest.mark.asyncio
-@pytest.mark.vcr
-async def test_validate_coin_valid(hass):
+@patch("custom_components.miningpoolhub.config_flow.MiningPoolHubAPI")
+async def test_validate_coin_valid(m_miningpoolhubapi, hass):
     """Test no exception is raised for a valid coin."""
+    m_instance = AsyncMock()
+    m_instance.async_get_dashboard = AsyncMock()
+    m_miningpoolhubapi.return_value = m_instance
     await config_flow.validate_coin("ethereum", API_KEY, hass)
 
 
@@ -26,24 +29,32 @@ async def test_validate_coin_valid(hass):
 async def test_validate_coin_invalid(m_miningpoolhubapi, hass):
     """Test a ValueError is raised when the coin is not valid."""
     m_instance = AsyncMock()
-    m_instance.async_get_dashboard = AsyncMock(side_effect=NotFoundError(AsyncMock()))
+    m_instance.async_get_dashboard = AsyncMock(
+        side_effect=InvalidCoinError(AsyncMock())
+    )
     m_miningpoolhubapi.return_value = m_instance
-    for bad_path in ("dollarcoin", "bitdollar"):
+    for bad_coin in ("dollarcoin", "bitdollar"):
         with pytest.raises(ValueError):
-            await config_flow.validate_coin(bad_path, API_KEY, hass)
+            await config_flow.validate_coin(bad_coin, API_KEY, hass)
 
 
-@pytest.mark.asyncio
-@pytest.mark.vcr
-async def test_validate_auth_valid(hass):
+@patch("custom_components.miningpoolhub.config_flow.MiningPoolHubAPI")
+async def test_validate_auth_valid(m_miningpoolhubapi, hass):
     """Test no exception is raised for valid API key."""
+    m_instance = AsyncMock()
+    m_instance.async_get_dashboard = AsyncMock()
+    m_miningpoolhubapi.return_value = m_instance
     await config_flow.validate_auth(API_KEY, hass)
 
 
-@pytest.mark.asyncio
-@pytest.mark.vcr
-async def test_validate_auth_invalid(hass):
+@patch("custom_components.miningpoolhub.config_flow.MiningPoolHubAPI")
+async def test_validate_auth_invalid(m_miningpoolhubapi, hass):
     """Test ValueError is raised when API key is invalid."""
+    m_instance = AsyncMock()
+    m_instance.async_get_user_all_balances = AsyncMock(
+        side_effect=UnauthorizedError(AsyncMock())
+    )
+    m_miningpoolhubapi.return_value = m_instance
     with pytest.raises(ValueError):
         await config_flow.validate_auth("token", hass)
 
@@ -76,9 +87,10 @@ async def test_flow_user_init_invalid_api_key(m_validate_auth, hass):
     result = await hass.config_entries.flow.async_configure(
         _result["flow_id"], user_input={CONF_API_KEY: "bad"}
     )
-    assert {"base": "auth"} == result["errors"]
+    assert result["errors"] == {"base": "auth"}
 
 
+# noinspection PyUnusedLocal
 @patch("custom_components.miningpoolhub.config_flow.validate_auth")
 async def test_flow_user_init_data_valid(m_validate_auth, hass):
     """Test we advance to the next step when data is valid."""
@@ -88,8 +100,8 @@ async def test_flow_user_init_data_valid(m_validate_auth, hass):
     result = await hass.config_entries.flow.async_configure(
         _result["flow_id"], user_input={CONF_API_KEY: "good"}
     )
-    assert "coin" == result["step_id"]
-    assert "form" == result["type"]
+    assert result["step_id"] == "coin"
+    assert result["type"] == "form"
 
 
 async def test_flow_coin_init_form(hass):
@@ -107,7 +119,7 @@ async def test_flow_coin_init_form(hass):
         "step_id": "coin",
         "type": "form",
     }
-    assert expected == result
+    assert result == expected
 
 
 @patch("custom_components.miningpoolhub.config_flow.validate_coin")
@@ -120,10 +132,12 @@ async def test_flow_coin_path_invalid(m_validate_coin, hass):
     result = await hass.config_entries.flow.async_configure(
         _result["flow_id"], user_input={CONF_NAME: "bad"}
     )
-    assert {"base": "invalid_path"} == result["errors"]
+    assert result["errors"] == {"base": "invalid_coin"}
 
 
-async def test_flow_coin_add_another(hass):
+# noinspection PyUnusedLocal
+@patch("custom_components.miningpoolhub.config_flow.validate_coin")
+async def test_flow_coin_add_another(m_validate_coin, hass):
     """Test we show the coin flow again if the add_another box was checked."""
     config_flow.MiningPoolHubConfigFlow.data = {
         CONF_API_KEY: API_KEY,
@@ -136,11 +150,11 @@ async def test_flow_coin_add_another(hass):
         _result["flow_id"],
         user_input={CONF_NAME: "ethereum", "add_another": True},
     )
-    print(result)
-    assert "coin" == result["step_id"]
-    assert "form" == result["type"]
+    assert result["step_id"] == "coin"
+    assert result["type"] == "form"
 
 
+# noinspection PyUnusedLocal
 @patch("custom_components.miningpoolhub.config_flow.validate_coin")
 async def test_flow_coin_creates_config_entry(m_validate_coin, hass):
     """Test the config entry is successfully created."""
@@ -170,4 +184,106 @@ async def test_flow_coin_creates_config_entry(m_validate_coin, hass):
         "description_placeholders": None,
         "result": mock.ANY,
     }
-    assert expected == result
+    assert result == expected
+
+
+@patch("custom_components.miningpoolhub.sensor.MiningPoolHubAPI")
+async def test_options_flow_init(m_miningpoolhub, hass):
+    """Test config flow options."""
+    m_instance = AsyncMock()
+    m_instance.async_get_dashboard = AsyncMock()
+    m_miningpoolhub.return_value = m_instance
+
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        unique_id="miningpoolhub_ethereum",
+        data={
+            CONF_API_KEY: "api-key",
+            CONF_FIAT_CURRENCY: "USD",
+            CONF_CURRENCY_NAMES: ["ethereum"],
+        },
+    )
+    config_entry.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(config_entry.entry_id)
+    await hass.async_block_till_done()
+
+    # show initial form
+    result = await hass.config_entries.options.async_init(config_entry.entry_id)
+    assert result["type"] == "form"
+    assert result["step_id"] == "init"
+    assert result["errors"] == {}
+    # Verify multi-select options populated with configured coins.
+    assert result["data_schema"].schema["coins"].options == {
+        "sensor.miningpoolhub_ethereum": "Ethereum"
+    }
+
+
+@patch("custom_components.miningpoolhub.sensor.MiningPoolHubAPI")
+async def test_options_flow_remove_coin(m_miningpoolhub, hass):
+    """Test config flow options."""
+    m_instance = AsyncMock()
+    m_instance.async_get_dashboard = AsyncMock()
+    m_miningpoolhub.return_value = m_instance
+
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        unique_id="miningpoolhub_ethereum",
+        data={
+            CONF_API_KEY: "api-key",
+            CONF_FIAT_CURRENCY: "USD",
+            CONF_CURRENCY_NAMES: ["ethereum"],
+        },
+    )
+    config_entry.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(config_entry.entry_id)
+    await hass.async_block_till_done()
+
+    # show initial form
+    result = await hass.config_entries.options.async_init(config_entry.entry_id)
+    # submit form with options
+    result = await hass.config_entries.options.async_configure(
+        result["flow_id"], user_input={"coins": []}
+    )
+    assert result["type"] == "create_entry"
+    assert result["title"] == ""
+    assert result["result"] is True
+    assert result["data"] == {CONF_CURRENCY_NAMES: []}
+
+
+@patch("custom_components.miningpoolhub.sensor.MiningPoolHubAPI")
+@patch("custom_components.miningpoolhub.config_flow.MiningPoolHubAPI")
+async def test_options_flow_add_coin(m_miningpoolhub, m_miningpoolhub_cf, hass):
+    """Test config flow options."""
+    m_instance = AsyncMock()
+    m_instance.async_get_dashboard = AsyncMock()
+    m_miningpoolhub.return_value = m_instance
+    m_miningpoolhub_cf.return_value = m_instance
+
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        unique_id="miningpoolhub_ethereum",
+        data={
+            CONF_API_KEY: "api-key",
+            CONF_FIAT_CURRENCY: "USD",
+            CONF_CURRENCY_NAMES: ["ethereum"],
+        },
+    )
+    config_entry.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(config_entry.entry_id)
+    await hass.async_block_till_done()
+
+    # show initial form
+    result = await hass.config_entries.options.async_init(config_entry.entry_id)
+    # submit form with options
+    result = await hass.config_entries.options.async_configure(
+        result["flow_id"],
+        user_input={"coins": ["sensor.miningpoolhub_ethereum"], "name": "doge"},
+    )
+    assert result["type"] == "create_entry"
+    assert result["title"] == ""
+    assert result["result"] is True
+    expected_coins = [
+        "ethereum",
+        "doge",
+    ]
+    assert result["data"] == {CONF_CURRENCY_NAMES: expected_coins}

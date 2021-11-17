@@ -7,6 +7,6 @@
   "domain": "miningpoolhub",
   "iot_class": "cloud_polling",
   "name": "Mining Pool Hub",
-  "requirements": ["miningpoolhub-py==1.0.12"],
-  "version": "0.2.6"
+  "requirements": ["miningpoolhub-py==1.0.18"],
+  "version": "0.2.7"
 }

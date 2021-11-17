@@ -57,6 +57,9 @@ async def async_setup_entry(
 ):
     """Setup sensors from a config entry created in the integrations UI."""
     config = hass.data[DOMAIN][config_entry.entry_id]
+    # Update our config to include new coins and remove those that have been removed.
+    if config_entry.options:
+        config.update(config_entry.options)
     session = async_get_clientsession(hass)
     miningpoolhub_api = MiningPoolHubAPI(session, api_key=config[CONF_API_KEY])
     sensors = [
@@ -66,6 +69,7 @@ async def async_setup_entry(
     async_add_entities(sensors, update_before_add=True)
 
 
+# noinspection PyUnusedLocal
 async def async_setup_platform(
     hass: HomeAssistantType,
     config: ConfigType,
@@ -95,7 +99,7 @@ class MiningPoolHubSensor(Entity):
         self.fiat_currency = fiat_currency
         self.attrs: Dict[str, Any] = {}
         self._icon = "mdi:ethereum" if coin_name == "ethereum" else None
-        self._name = SENSOR_PREFIX + self.coin_name
+        self._name = SENSOR_PREFIX + self.coin_name.title()
         self._state = None
         self._unit_of_measurement = "\u200b"
         self._available = True
@@ -142,11 +146,13 @@ class MiningPoolHubSensor(Entity):
                 dashboard_data["personal"]["hashrate"]
             )
 
-            if dashboard_data["personal"]["shares"]["valid"] is not None:
-                self.attrs[ATTR_VALID_SHARES] = int(dashboard_data["personal"]["shares"]["valid"])
+            self.attrs[ATTR_VALID_SHARES] = int(
+                dashboard_data["personal"]["shares"]["valid"]
+            )
 
-            if dashboard_data["personal"]["shares"]["invalid"] is not None:
-                self.attrs[ATTR_INVALID_SHARES] = int(dashboard_data["personal"]["shares"]["invalid"])
+            self.attrs[ATTR_INVALID_SHARES] = int(
+                dashboard_data["personal"]["shares"]["invalid"]
+            )
 
             self.attrs[ATTR_BALANCE_CONFIRMED] = float(
                 dashboard_data["balance"]["confirmed"]
@@ -160,9 +166,11 @@ class MiningPoolHubSensor(Entity):
             self.attrs[ATTR_BALANCE_AUTO_EXCHANGE_UNCONFIRMED] = float(
                 dashboard_data["balance_for_auto_exchange"]["unconfirmed"]
             )
+
             self.attrs[ATTR_BALANCE_ON_EXCHANGE] = float(
                 dashboard_data["balance_on_exchange"]
             )
+
             self.attrs[ATTR_RECENT_CREDITS_24_HOURS] = float(
                 dashboard_data["recent_credits_24hours"]["amount"]
             )
@@ -171,4 +179,6 @@ class MiningPoolHubSensor(Entity):
             self._available = True
         except (ClientError, miningpoolhub_py.exceptions.APIError, ClientResponseError):
             self._available = False
-            _LOGGER.exception("Error retrieving data from MiningPoolHub.")
+            _LOGGER.exception(
+                "Error retrieving data from MiningPoolHub for sensor %s.", self.name
+            )

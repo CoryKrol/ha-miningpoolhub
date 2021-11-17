@@ -21,5 +21,20 @@
         "title": "Add Coin"
       }
     }
+  },
+  "options": {
+    "error": {
+      "invalid_coin": "The coin name provided is not valid. Should be supported by MiningPoolHub."
+    },
+    "step": {
+      "init": {
+        "title": "Manage Coins",
+        "data": {
+          "coins": "Existing Coins: Uncheck any coins you want to remove.",
+          "name": "New Coin: Name of coin e.g. ethereum"
+        },
+        "description": "Remove existing coins or add a new coin."
+      }
+    }
   }
 }
