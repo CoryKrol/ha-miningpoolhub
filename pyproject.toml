@@ -25,6 +25,8 @@ black = "^21.9b0"
 homeassistant = "^2021.10.0b1"
 pytest-homeassistant-custom-component = "^0.4.5"
 mutmut = "^2.2.0"
+tox = "^3.24.4"
+tox-poetry = "^0.4.1"
 
 
 [build-system]

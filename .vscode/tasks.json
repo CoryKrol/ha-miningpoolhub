@@ -1,0 +1,136 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Run Home Assistant Core",
+            "type": "shell",
+            "command": "hass -c ./config",
+            "group": "test",
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Pytest",
+            "type": "shell",
+            "command": "poetry run pytest --timeout=10 tests",
+            "dependsOn": [
+                "Install all Requirements"
+            ],
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": []
+            },
+            {
+            "label": "Flake8",
+            "type": "shell",
+            "command": "poetry run pre-commit run flake8 --all-files",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": []
+            },
+            {
+            "type": "shell",
+            "command": "${command:python.interpreterPath}",
+            "args": ["setup.py", "bdist_wheel", "sdist"],
+            "isBackground": true,
+            "options": {"cwd": "${workspaceFolder}"},
+            "label": "Build Wheel",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "type": "shell",
+            "command": "tox",
+            "args": [],
+            "isBackground": false,
+            "options": {"cwd": "${workspaceFolder}"},
+            "label": "Run tox",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Install all Requirements",
+            "type": "shell",
+            "command": "poetry install",
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Mutmut: Run",
+            "type": "shell",
+            "command": "poetry run mutmut run --paths-to-mutate custom_components/ha-miningpoolhub",
+            "dependsOn": [
+                "c"
+            ],
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Mutmut: Results",
+            "type": "shell",
+            "command": "poetry run mutmut results",
+            "dependsOn": [
+                "Mutmut: Run"
+            ],
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Black: Reformat",
+            "type": "shell",
+            "command": "poetry run black .",
+            "dependsOn": [
+                "Install all Requirements"
+            ],
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": []
+        }
+    ]
+}
