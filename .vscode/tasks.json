@@ -28,8 +28,8 @@
                 "panel": "new"
             },
             "problemMatcher": []
-            },
-            {
+        },
+        {
             "label": "Flake8",
             "type": "shell",
             "command": "poetry run pre-commit run flake8 --all-files",
@@ -42,13 +42,19 @@
                 "panel": "new"
             },
             "problemMatcher": []
-            },
-            {
+        },
+        {
             "type": "shell",
             "command": "${command:python.interpreterPath}",
-            "args": ["setup.py", "bdist_wheel", "sdist"],
+            "args": [
+                "setup.py",
+                "bdist_wheel",
+                "sdist"
+            ],
             "isBackground": true,
-            "options": {"cwd": "${workspaceFolder}"},
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
             "label": "Build Wheel",
             "group": {
                 "kind": "build",
@@ -60,7 +66,9 @@
             "command": "tox",
             "args": [],
             "isBackground": false,
-            "options": {"cwd": "${workspaceFolder}"},
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
             "label": "Run tox",
             "group": {
                 "kind": "test",
