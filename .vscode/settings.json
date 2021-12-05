@@ -2,14 +2,19 @@
     "python.formatting.provider": "black",
     // Added --no-cov to work around TypeError: message must be set
     // https://github.com/microsoft/vscode-python/issues/14067
+    
     "python.testing.pytestArgs": [
         "tests",
         "--no-cov"
     ],
-    "python.testing.cwd": "${workspaceFolder}/tests",
+    "python.testing.cwd": "${workspaceFolder}",
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
     "files.associations": {
         "*.yaml": "home-assistant"
     },
+    "cSpell.words": [
+        "aiohttp",
+        "hass"
+    ],
 }

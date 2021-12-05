@@ -1,12 +1,13 @@
 from copy import deepcopy
 import logging
-from typing import Any, Dict, Optional
+from typing import Any, Dict, Mapping, Optional
 
 from miningpoolhub_py.exceptions import InvalidCoinError, UnauthorizedError
 from miningpoolhub_py.miningpoolhubapi import MiningPoolHubAPI
 from homeassistant import config_entries, core
 from homeassistant.const import CONF_API_KEY, CONF_NAME
 from homeassistant.core import callback
+from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 import homeassistant.helpers.config_validation as cv
 from homeassistant.helpers.entity_registry import (
@@ -86,7 +87,7 @@ async def validate_auth(api_key: str, hass: core.HomeAssistant) -> None:
 class MiningPoolHubConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Mining Pool Hub config flow."""
 
-    data: Optional[Dict[str, Any]] = {"api_key": "default"}
+    data: Mapping[str, Any] = {CONF_API_KEY: "default"}
 
     async def async_step_user(self, user_input: Optional[Dict[str, Any]] = None):
         """Invoked when a user initiates a flow via the user interface."""
@@ -149,7 +150,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
 
     async def async_step_init(
         self, user_input: Dict[str, Any] = None
-    ) -> Dict[str, Any]:
+    ) -> FlowResult:
         """Manage the options for the custom component."""
         errors: Dict[str, str] = {}
         # Grab all configured pools from the entity registry so we can populate the
@@ -159,7 +160,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             entity_registry, self.config_entry.entry_id
         )
         # Default value for our multi-select.
-        all_coins = {e.entity_id: e.original_name[14:] for e in entries}
+        all_coins = {e.entity_id: e.original_name[14:] if e.original_name is not None else "" for e in entries}
         coin_map = {e.entity_id: e for e in entries}
 
         if user_input is not None:
@@ -181,7 +182,8 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                 entry_name = entry.unique_id
                 updated_coins = [e for e in updated_coins if e != entry_name]
 
-            if user_input.get(CONF_NAME):
+            coin_name = user_input.get(CONF_NAME)
+            if coin_name:
                 # Validate the coin.
                 api_key = self.hass.data[DOMAIN][self.config_entry.entry_id][
                     CONF_API_KEY
@@ -192,8 +194,8 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
                     errors["base"] = "invalid_coin"
 
                 if not errors:
-                    # Add the new repo.
-                    updated_coins.append(user_input.get(CONF_NAME).lower())
+                    # Add the new coin.
+                    updated_coins.append(coin_name.lower())
 
             if not errors:
                 # Value of data will be set on the options property of our config_entry instance.

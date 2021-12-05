@@ -15,7 +15,10 @@
         {
             "label": "Pytest",
             "type": "shell",
-            "command": "poetry run pytest --timeout=10 tests",
+            "command": "poetry run pytest --timeout=10 .",
+            "options": {
+                "cwd": "${workspaceFolder}/tests"
+            },
             "dependsOn": [
                 "Install all Requirements"
             ],
@@ -30,9 +33,43 @@
             "problemMatcher": []
         },
         {
-            "label": "Flake8",
+            "label": "Pytest :: Code Coverage",
+            "type": "shell",
+            "command": "poetry run pytest --timeout=10 --cov=../ --cov-report html .",
+            "options": {
+                "cwd": "${workspaceFolder}/tests"
+            },
+            "dependsOn": [
+                "Install all Requirements"
+            ],
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Precommit :: Flake8",
             "type": "shell",
             "command": "poetry run pre-commit run flake8 --all-files",
+            "group": {
+                "kind": "test",
+                "isDefault": true
+            },
+            "presentation": {
+                "reveal": "always",
+                "panel": "new"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Flake8",
+            "type": "shell",
+            "command": "poetry run flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics",
             "group": {
                 "kind": "test",
                 "isDefault": true
@@ -92,9 +129,9 @@
         {
             "label": "Mutmut: Run",
             "type": "shell",
-            "command": "poetry run mutmut run --paths-to-mutate custom_components/ha-miningpoolhub",
+            "command": "poetry run mutmut run --paths-to-mutate ./custom_components/miningpoolhub",
             "dependsOn": [
-                "c"
+                "Install all Requirements"
             ],
             "group": {
                 "kind": "test",
