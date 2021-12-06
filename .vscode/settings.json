@@ -1,8 +1,8 @@
 {
     "python.formatting.provider": "black",
+    "python.linting.banditArgs": ["-c", "pyproject.toml"],
     // Added --no-cov to work around TypeError: message must be set
     // https://github.com/microsoft/vscode-python/issues/14067
-    
     "python.testing.pytestArgs": [
         "tests",
         "--no-cov"
@@ -15,6 +15,15 @@
     },
     "cSpell.words": [
         "aiohttp",
-        "hass"
+        "codeowners",
+        "codespell",
+        "hass",
+        "homeassistant",
+        "Krol",
+        "miningpoolhub",
+        "mutmut",
+        "mypy",
+        "pytest",
+        "unsub"
     ],
 }
