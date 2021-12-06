@@ -206,6 +206,8 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
 
         options_schema = vol.Schema(
             {
+                # TODO: Modify options schema to support modifying API key
+                # vol.Optional(CONF_NAME): cv.string,
                 vol.Optional("coins", default=list(all_coins.keys())): cv.multi_select(
                     all_coins
                 ),

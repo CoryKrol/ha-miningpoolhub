@@ -56,6 +56,8 @@
         "pylint",
         "pytest",
         "ryanluker",
+        "spmeesseman",
+        "taskexplorer",
         "unsub",
         "yapf"
     ],

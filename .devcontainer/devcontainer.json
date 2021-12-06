@@ -4,28 +4,28 @@
     "appPort": [
         "8123:8123"
     ],
-    "postCreateCommand": "container install",
+    "postCreateCommand": "python3 -m pip install --no-cache-dir -U autopep8 yapf bandit flake8 mypy pylint pydocstyle; curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -; container install",
     // Set *default* container specific settings.json values on container create.
     "settings": {
         "terminal.integrated.defaultProfile.linux": "bash",
         "python.defaultInterpreterPath": "/usr/local/python/bin/python",
         "python.analysis.autoSearchPaths": false,
         "python.formatting.provider": "black",
-        "python.formatting.autopep8Path": "/usr/local/py-utils/bin/autopep8",
-        "python.formatting.blackPath": "/usr/local/py-utils/bin/black",
-        "python.formatting.yapfPath": "/usr/local/py-utils/bin/yapf",
+        "python.formatting.autopep8Path": "/usr/local/python/bin/autopep8",
+        "python.formatting.blackPath": "/usr/local/python/bin/black",
+        "python.formatting.yapfPath": "/usr/local/python/bin/yapf",
         "python.linting.enabled": true,
         "python.linting.pylintEnabled": true,
         "python.linting.pylintArgs": [
             "--disable",
             "import-error"
         ],
-        "python.linting.banditPath": "/usr/local/py-utils/bin/bandit",
-        "python.linting.flake8Path": "/usr/local/py-utils/bin/flake8",
-        "python.linting.mypyPath": "/usr/local/py-utils/bin/mypy",
-        "python.linting.pycodestylePath": "/usr/local/py-utils/bin/pycodestyle",
-        "python.linting.pydocstylePath": "/usr/local/py-utils/bin/pydocstyle",
-        "python.linting.pylintPath": "/usr/local/py-utils/bin/pylint",
+        "python.linting.banditPath": "/usr/local/python/bin/bandit",
+        "python.linting.flake8Path": "/usr/local/python/bin/flake8",
+        "python.linting.mypyPath": "/usr/local/python/bin/mypy",
+        "python.linting.pycodestylePath": "/usr/local/python/bin/pycodestyle",
+        "python.linting.pydocstylePath": "/usr/local/python/bin/pydocstyle",
+        "python.linting.pylintPath": "/usr/local/python/bin/pylint",
         "editor.formatOnPaste": false,
         "editor.formatOnSave": true,
         "editor.formatOnType": true,
