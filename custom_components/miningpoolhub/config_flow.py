@@ -109,7 +109,7 @@ class MiningPoolHubConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
         )
 
     async def async_step_coin(self, user_input: Optional[Dict[str, Any]] = None):
-        """Second step in config flow to add a repo to watch."""
+        """Second step in config flow to add a mining pool to watch."""
         errors: Dict[str, str] = {}
         if user_input is not None:
             # Validate the coin.

@@ -1,4 +1,8 @@
 {
+    "files.associations": {
+        "*.yaml": "home-assistant"
+    },
+
     "python.formatting.provider": "black",
     "python.linting.banditArgs": ["-c", "pyproject.toml"],
     // Added --no-cov to work around TypeError: message must be set
@@ -10,20 +14,49 @@
     "python.testing.cwd": "${workspaceFolder}",
     "python.testing.unittestEnabled": false,
     "python.testing.pytestEnabled": true,
-    "files.associations": {
-        "*.yaml": "home-assistant"
+
+    "terminal.integrated.profiles.linux": {
+        "bash": {
+            "path": "/bin/bash",
+            "icon": "terminal-bash"
+        },
+        "zsh": {
+            "path": "zsh"
+        },
+        "fish": {
+            "path": "fish"
+        },
+        "tmux": {
+            "path": "tmux",
+            "icon": "terminal-tmux"
+        },
+        "pwsh": {
+            "path": "pwsh",
+            "icon": "terminal-powershell"
+        }
     },
+
     "cSpell.words": [
         "aiohttp",
+        "autopep",
         "codeowners",
         "codespell",
+        "devcontainer",
+        "devintegration",
         "hass",
         "homeassistant",
         "Krol",
+        "ludeeus",
         "miningpoolhub",
         "mutmut",
         "mypy",
+        "pycodestyle",
+        "pydocstyle",
+        "pylance",
+        "pylint",
         "pytest",
-        "unsub"
+        "ryanluker",
+        "unsub",
+        "yapf"
     ],
 }
