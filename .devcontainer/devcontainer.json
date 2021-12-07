@@ -4,11 +4,15 @@
     "appPort": [
         "8123:8123"
     ],
-    "postCreateCommand": "python3 -m pip install --no-cache-dir -U autopep8 yapf bandit flake8 mypy pylint pydocstyle; curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python -; container install",
+    "postCreateCommand": "apt-get update && apt-get upgrade -y; apt install tcpdump libpcap0.8-dev -y; python3 -m pip install --no-cache-dir -U autopep8 yapf bandit flake8 mypy pylint pydocstyle poetry; poetry install",
+    // "remoteEnv": {
+    //     "PYTHONPATH": "${containerEnv:PYTHONPATH}:/usr/local/python/bin"
+    // },
     // Set *default* container specific settings.json values on container create.
     "settings": {
         "terminal.integrated.defaultProfile.linux": "bash",
         "python.defaultInterpreterPath": "/usr/local/python/bin/python",
+        "python.pythonPath": "/usr/local/python/bin/python",
         "python.analysis.autoSearchPaths": false,
         "python.formatting.provider": "black",
         "python.formatting.autopep8Path": "/usr/local/python/bin/autopep8",
@@ -44,7 +48,8 @@
     // Use 'postCreateCommand' to run commands after the container is created.
     // "postCreateCommand": "pip3 install --user -r requirements.txt",
     // Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
-    "remoteUser": "vscode",
+    "containerUser": "root",
+    "remoteUser": "root",
     "features": {
         "github-cli": "latest"
     }

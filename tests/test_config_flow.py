@@ -189,7 +189,7 @@ async def test_flow_coin_creates_config_entry(m_validate_coin, hass):
 
 @patch("custom_components.miningpoolhub.sensor.MiningPoolHubAPI")
 async def test_options_flow_init(m_miningpoolhub, hass):
-    """Test config flow options."""
+    """Should initialize config flow options without error."""
     m_instance = AsyncMock()
     m_instance.async_get_dashboard = AsyncMock()
     m_miningpoolhub.return_value = m_instance
@@ -220,7 +220,7 @@ async def test_options_flow_init(m_miningpoolhub, hass):
 
 @patch("custom_components.miningpoolhub.sensor.MiningPoolHubAPI")
 async def test_options_flow_remove_coin(m_miningpoolhub, hass):
-    """Test config flow options."""
+    """Should remove coin from config."""
     m_instance = AsyncMock()
     m_instance.async_get_dashboard = AsyncMock()
     m_miningpoolhub.return_value = m_instance
@@ -253,7 +253,7 @@ async def test_options_flow_remove_coin(m_miningpoolhub, hass):
 @patch("custom_components.miningpoolhub.sensor.MiningPoolHubAPI")
 @patch("custom_components.miningpoolhub.config_flow.MiningPoolHubAPI")
 async def test_options_flow_add_coin(m_miningpoolhub, m_miningpoolhub_cf, hass):
-    """Test config flow options."""
+    """Should use options config flow to add a coin without issue."""
     m_instance = AsyncMock()
     m_instance.async_get_dashboard = AsyncMock()
     m_miningpoolhub.return_value = m_instance

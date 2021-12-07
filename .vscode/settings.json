@@ -37,6 +37,7 @@
     },
 
     "cSpell.words": [
+        "aioclient",
         "aiohttp",
         "autopep",
         "codeowners",
@@ -46,6 +47,7 @@
         "hass",
         "homeassistant",
         "Krol",
+        "libpcap",
         "ludeeus",
         "miningpoolhub",
         "mutmut",
@@ -55,9 +57,11 @@
         "pylance",
         "pylint",
         "pytest",
+        "PYTHONPATH",
         "ryanluker",
         "spmeesseman",
         "taskexplorer",
+        "tcpdump",
         "unsub",
         "yapf"
     ],

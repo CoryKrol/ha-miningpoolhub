@@ -148,9 +148,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
     def __init__(self, config_entry: config_entries.ConfigEntry) -> None:
         self.config_entry = config_entry
 
-    async def async_step_init(
-        self, user_input: Dict[str, Any] = None
-    ) -> FlowResult:
+    async def async_step_init(self, user_input: Dict[str, Any] = None) -> FlowResult:
         """Manage the options for the custom component."""
         errors: Dict[str, str] = {}
         # Grab all configured pools from the entity registry so we can populate the
@@ -160,7 +158,10 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
             entity_registry, self.config_entry.entry_id
         )
         # Default value for our multi-select.
-        all_coins = {e.entity_id: e.original_name[14:] if e.original_name is not None else "" for e in entries}
+        all_coins = {
+            e.entity_id: e.original_name[14:] if e.original_name is not None else ""
+            for e in entries
+        }
         coin_map = {e.entity_id: e for e in entries}
 
         if user_input is not None:
@@ -207,7 +208,7 @@ class OptionsFlowHandler(config_entries.OptionsFlow):
         options_schema = vol.Schema(
             {
                 # TODO: Modify options schema to support modifying API key
-                # vol.Optional(CONF_NAME): cv.string,
+                # vol.Optional(CONF_API_KEY): cv.string,
                 vol.Optional("coins", default=list(all_coins.keys())): cv.multi_select(
                     all_coins
                 ),

@@ -7,7 +7,7 @@ from miningpoolhub_py.exceptions import APIError
 from custom_components.miningpoolhub.sensor import MiningPoolHubSensor
 
 
-async def test_async_update_success(hass, aio_client_mock):
+async def test_async_update_success(hass, aioclient_mock):
     """Tests a fully successful async_update."""
     miningpoolhub = MagicMock()
     miningpoolhub.async_get_dashboard = AsyncMock(
