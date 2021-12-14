@@ -2,25 +2,27 @@
 from datetime import timedelta
 from unittest.mock import AsyncMock, MagicMock
 
-from miningpoolhub_py.exceptions import APIError
-from homeassistant.const import CONF_API_KEY
 from homeassistant.config_entries import ConfigEntryState
+from homeassistant.const import CONF_API_KEY
+from homeassistant.helpers.entity_platform import DATA_ENTITY_PLATFORM
+from miningpoolhub_py.exceptions import APIError
 from pytest_homeassistant_custom_component.common import (
     MockConfigEntry,
     MockPlatform,
     MockEntityPlatform,
     patch,
 )
+
+from custom_components.miningpoolhub.const import (
+    CONF_CURRENCY_NAMES,
+    DOMAIN,
+    CONF_FIAT_CURRENCY,
+)
 from custom_components.miningpoolhub.sensor import (
     MiningPoolHubSensor,
     PLATFORM_SCHEMA,
     SCAN_INTERVAL,
     async_setup_platform,
-)
-from custom_components.miningpoolhub.const import (
-    CONF_CURRENCY_NAMES,
-    DOMAIN,
-    CONF_FIAT_CURRENCY,
 )
 
 
@@ -44,9 +46,13 @@ async def test_async_setup_entry(m_async_get_clientsession, hass, aioclient_mock
     assert await hass.config_entries.async_setup(config_entry.entry_id)
     await hass.async_block_till_done()
     assert hass.data[DOMAIN].get(config_entry.entry_id) is not None
-    assert hass.components._hass.data["miningpoolhub"]
     assert config_entry.state == ConfigEntryState.LOADED
     m_async_get_clientsession.assert_called_once()
+    assert (
+        hass.data[DATA_ENTITY_PLATFORM][DOMAIN][0]
+        .entities.get("sensor.miningpoolhub_ethereum")
+        .miningpoolhub_api
+    )
 
 
 @patch("custom_components.miningpoolhub.sensor.async_get_clientsession")
@@ -61,8 +67,9 @@ async def test_async_setup_platform(m_async_get_clientsession, hass, aioclient_m
         scan_interval=SCAN_INTERVAL,
         async_setup_platform=async_setup_platform,
     )
+    # noinspection PyTypeChecker
     mock_entity_platform = MockEntityPlatform(
-        hass=hass, domain=DOMAIN, platform=mock_platform, platform_name=DOMAIN
+        hass=hass, domain="sensor", platform=mock_platform, platform_name=DOMAIN
     )
     await mock_entity_platform.async_setup(
         {
@@ -74,45 +81,21 @@ async def test_async_setup_platform(m_async_get_clientsession, hass, aioclient_m
 
     await hass.async_block_till_done()
 
-    assert hass.data["entity_platform"].get(DOMAIN)
     m_async_get_clientsession.assert_called_once()
+    assert (
+        hass.data[DATA_ENTITY_PLATFORM][DOMAIN][0]
+        .entities.get("sensor.miningpoolhub_ethereum")
+        .miningpoolhub_api
+    )
 
 
-async def test_async_update_success(hass, aioclient_mock):
+async def test_async_update_success(
+    hass, aioclient_mock, mock_miningpoolhub_dashboard_response
+):
     """Tests a fully successful async_update."""
     miningpoolhub = MagicMock()
     miningpoolhub.async_get_dashboard = AsyncMock(
-        side_effect=[
-            {
-                "personal": {
-                    "hashrate": 143.165577,
-                    "sharerate": 0,
-                    "sharedifficulty": 0,
-                    "shares": {
-                        "valid": 13056,
-                        "invalid": 0,
-                        "invalid_percent": 0,
-                        "unpaid": 0,
-                    },
-                    "estimates": {
-                        "block": 1.733e-5,
-                        "fee": 0,
-                        "donation": 0,
-                        "payout": 1.733e-5,
-                    },
-                },
-                "balance": {"confirmed": 0.05458251, "unconfirmed": 6.64e-5},
-                "balance_for_auto_exchange": {"confirmed": 5.287e-5, "unconfirmed": 0},
-                "balance_on_exchange": 0,
-                "recent_credits_24hours": {"amount": 0.0032644192},
-                "pool": {
-                    "info": {
-                        "name": "Ethereum (ETH) Mining Pool Hub",
-                        "currency": "ETH",
-                    }
-                },
-            }
-        ]
+        side_effect=[mock_miningpoolhub_dashboard_response]
     )
     sensor = MiningPoolHubSensor(miningpoolhub, "ethereum", "USD")
     await sensor.async_update()
