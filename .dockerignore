@@ -1,9 +1,6 @@
 # General files
 .git
 .github
-config
-docs
-
 # Development
 .devcontainer
 .vscode
@@ -13,8 +10,4 @@ docs
 tests
 
 # Other virtualization methods
-venv
-.vagrant
-
 # Temporary files
-**/__pycache__

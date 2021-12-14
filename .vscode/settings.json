@@ -39,6 +39,7 @@
     "cSpell.words": [
         "aioclient",
         "aiohttp",
+        "asyncio",
         "autopep",
         "codeowners",
         "codespell",

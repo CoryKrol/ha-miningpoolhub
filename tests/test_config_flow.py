@@ -16,6 +16,11 @@ from custom_components.miningpoolhub.const import (
 API_KEY = "key"
 
 
+def test_init():
+    """Test initialization of file"""
+    assert config_flow._LOGGER is not None
+
+
 @patch("custom_components.miningpoolhub.config_flow.MiningPoolHubAPI")
 async def test_validate_coin_valid(m_miningpoolhubapi, hass):
     """Test no exception is raised for a valid coin."""
@@ -74,7 +79,7 @@ async def test_flow_user_init(hass):
         "step_id": "user",
         "type": "form",
     }
-    assert expected == result
+    assert result == expected
 
 
 @patch("custom_components.miningpoolhub.config_flow.validate_auth")
@@ -159,7 +164,7 @@ async def test_flow_coin_add_another(m_validate_coin, hass):
 async def test_flow_coin_creates_config_entry(m_validate_coin, hass):
     """Test the config entry is successfully created."""
     config_flow.MiningPoolHubConfigFlow.data = {
-        CONF_API_KEY: "key",
+        CONF_API_KEY: API_KEY,
         CONF_CURRENCY_NAMES: [],
     }
     _result = await hass.config_entries.flow.async_init(
@@ -177,7 +182,7 @@ async def test_flow_coin_creates_config_entry(m_validate_coin, hass):
         "options": {},
         "title": "MiningPoolHub",
         "data": {
-            "api_key": "key",
+            "api_key": API_KEY,
             "currency_names": ["ethereum"],
         },
         "description": None,

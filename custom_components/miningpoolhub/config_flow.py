@@ -1,6 +1,6 @@
 from copy import deepcopy
 import logging
-from typing import Any, Dict, Mapping, Optional
+from typing import Any, Dict, Optional
 
 from miningpoolhub_py.exceptions import InvalidCoinError, UnauthorizedError
 from miningpoolhub_py.miningpoolhubapi import MiningPoolHubAPI
@@ -87,7 +87,7 @@ async def validate_auth(api_key: str, hass: core.HomeAssistant) -> None:
 class MiningPoolHubConfigFlow(config_entries.ConfigFlow, domain=DOMAIN):
     """Mining Pool Hub config flow."""
 
-    data: Mapping[str, Any] = {CONF_API_KEY: "default"}
+    data: Dict[str, Any] = {CONF_API_KEY: "default"}
 
     async def async_step_user(self, user_input: Optional[Dict[str, Any]] = None):
         """Invoked when a user initiates a flow via the user interface."""

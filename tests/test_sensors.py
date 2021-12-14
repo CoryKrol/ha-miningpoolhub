@@ -1,10 +1,81 @@
 """Tests for the sensor module."""
-
+from datetime import timedelta
 from unittest.mock import AsyncMock, MagicMock
 
 from miningpoolhub_py.exceptions import APIError
+from homeassistant.const import CONF_API_KEY
+from homeassistant.config_entries import ConfigEntryState
+from pytest_homeassistant_custom_component.common import (
+    MockConfigEntry,
+    MockPlatform,
+    MockEntityPlatform,
+    patch,
+)
+from custom_components.miningpoolhub.sensor import (
+    MiningPoolHubSensor,
+    PLATFORM_SCHEMA,
+    SCAN_INTERVAL,
+    async_setup_platform,
+)
+from custom_components.miningpoolhub.const import (
+    CONF_CURRENCY_NAMES,
+    DOMAIN,
+    CONF_FIAT_CURRENCY,
+)
 
-from custom_components.miningpoolhub.sensor import MiningPoolHubSensor
+
+@patch("custom_components.miningpoolhub.sensor.async_get_clientsession")
+async def test_async_setup_entry(m_async_get_clientsession, hass, aioclient_mock):
+    assert SCAN_INTERVAL == timedelta(minutes=1)
+    assert PLATFORM_SCHEMA is not None
+
+    m_async_get_clientsession.return_value = aioclient_mock
+
+    config_entry = MockConfigEntry(
+        domain=DOMAIN,
+        unique_id="miningpoolhub_ethereum",
+        data={
+            CONF_API_KEY: "api-key",
+            CONF_FIAT_CURRENCY: "USD",
+            CONF_CURRENCY_NAMES: ["ethereum"],
+        },
+    )
+    config_entry.add_to_hass(hass)
+    assert await hass.config_entries.async_setup(config_entry.entry_id)
+    await hass.async_block_till_done()
+    assert hass.data[DOMAIN].get(config_entry.entry_id) is not None
+    assert hass.components._hass.data["miningpoolhub"]
+    assert config_entry.state == ConfigEntryState.LOADED
+    m_async_get_clientsession.assert_called_once()
+
+
+@patch("custom_components.miningpoolhub.sensor.async_get_clientsession")
+async def test_async_setup_platform(m_async_get_clientsession, hass, aioclient_mock):
+    assert SCAN_INTERVAL == timedelta(minutes=1)
+    assert PLATFORM_SCHEMA is not None
+
+    m_async_get_clientsession.return_value = aioclient_mock
+
+    mock_platform = MockPlatform(
+        platform_schema=PLATFORM_SCHEMA,
+        scan_interval=SCAN_INTERVAL,
+        async_setup_platform=async_setup_platform,
+    )
+    mock_entity_platform = MockEntityPlatform(
+        hass=hass, domain=DOMAIN, platform=mock_platform, platform_name=DOMAIN
+    )
+    await mock_entity_platform.async_setup(
+        {
+            CONF_API_KEY: "api_key",
+            CONF_CURRENCY_NAMES: ["ethereum"],
+            CONF_FIAT_CURRENCY: "USD",
+        }
+    )
+
+    await hass.async_block_till_done()
+
+    assert hass.data["entity_platform"].get(DOMAIN)
+    m_async_get_clientsession.assert_called_once()
 
 
 async def test_async_update_success(hass, aioclient_mock):
@@ -60,8 +131,8 @@ async def test_async_update_success(hass, aioclient_mock):
         "valid_shares": 13056,
     }
 
-    assert expected == sensor.attrs
-    assert expected == sensor.device_state_attributes
+    assert sensor.attrs == expected
+    assert sensor.device_state_attributes == expected
     assert sensor.available is True
 
 
@@ -74,4 +145,4 @@ async def test_async_update_failed():
     await sensor.async_update()
 
     assert sensor.available is False
-    assert {} == sensor.attrs
+    assert sensor.attrs == {}

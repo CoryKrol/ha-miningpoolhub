@@ -39,7 +39,7 @@ from .const import (
 
 _LOGGER = logging.getLogger(__name__)
 # Time between updating data from MiningPoolHub
-SCAN_INTERVAL = timedelta(minutes=2)
+SCAN_INTERVAL = timedelta(minutes=1)
 
 PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
     {
@@ -53,7 +53,7 @@ PLATFORM_SCHEMA = PLATFORM_SCHEMA.extend(
 async def async_setup_entry(
     hass: core.HomeAssistant,
     config_entry: config_entries.ConfigEntry,
-    async_add_entities,
+    async_add_entities: Callable,
 ):
     """Setup sensors from a config entry created in the integrations UI."""
     config = hass.data[DOMAIN][config_entry.entry_id]
@@ -66,7 +66,10 @@ async def async_setup_entry(
         MiningPoolHubSensor(miningpoolhub_api, coin, config[CONF_FIAT_CURRENCY])
         for coin in config[CONF_CURRENCY_NAMES]
     ]
-    async_add_entities(sensors, update_before_add=True)
+
+    # Remove update_before_add
+    # See: https://github.com/home-assistant/core/blob/dev/homeassistant/helpers/entity_platform.py#L344
+    return await async_add_entities(sensors)
 
 
 # noinspection PyUnusedLocal
@@ -84,7 +87,7 @@ async def async_setup_platform(
         MiningPoolHubSensor(miningpoolhub_api, coin, fiat_currency)
         for coin in config[CONF_CURRENCY_NAMES]
     ]
-    async_add_entities(sensors, update_before_add=True)
+    return await async_add_entities(sensors)
 
 
 class MiningPoolHubSensor(Entity):
