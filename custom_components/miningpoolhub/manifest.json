@@ -1,7 +1,7 @@
 {
   "codeowners": ["@CoryKrol"],
   "config_flow": true,
-  "dependencies": {},
+  "dependencies": [],
   "documentation": "https://github.com/CoryKrol/ha-miningpoolhub",
   "issue_tracker": "https://github.com/CoryKrol/ha-miningpoolhub/issues",
   "domain": "miningpoolhub",

@@ -1,10 +1,11 @@
 """Tests for the sensor module."""
 from datetime import timedelta
+from typing import Optional
 from unittest.mock import AsyncMock, MagicMock
 
 from homeassistant.config_entries import ConfigEntryState
 from homeassistant.const import CONF_API_KEY
-from homeassistant.helpers.entity_platform import DATA_ENTITY_PLATFORM
+from homeassistant.helpers.entity_platform import DATA_ENTITY_PLATFORM, EntityPlatform
 from miningpoolhub_py.exceptions import APIError
 from pytest_homeassistant_custom_component.common import (
     MockConfigEntry,
@@ -28,9 +29,6 @@ from custom_components.miningpoolhub.sensor import (
 
 @patch("custom_components.miningpoolhub.sensor.async_get_clientsession")
 async def test_async_setup_entry(m_async_get_clientsession, hass, aioclient_mock):
-    assert SCAN_INTERVAL == timedelta(minutes=1)
-    assert PLATFORM_SCHEMA is not None
-
     m_async_get_clientsession.return_value = aioclient_mock
 
     config_entry = MockConfigEntry(
@@ -57,9 +55,6 @@ async def test_async_setup_entry(m_async_get_clientsession, hass, aioclient_mock
 
 @patch("custom_components.miningpoolhub.sensor.async_get_clientsession")
 async def test_async_setup_platform(m_async_get_clientsession, hass, aioclient_mock):
-    assert SCAN_INTERVAL == timedelta(minutes=1)
-    assert PLATFORM_SCHEMA is not None
-
     m_async_get_clientsession.return_value = aioclient_mock
 
     mock_platform = MockPlatform(
@@ -68,8 +63,8 @@ async def test_async_setup_platform(m_async_get_clientsession, hass, aioclient_m
         async_setup_platform=async_setup_platform,
     )
     # noinspection PyTypeChecker
-    mock_entity_platform = MockEntityPlatform(
-        hass=hass, domain="sensor", platform=mock_platform, platform_name=DOMAIN
+    mock_entity_platform: EntityPlatform = MockEntityPlatform(
+        hass=hass, domain="sensor", platform=mock_platform, platform_name=DOMAIN, scan_interval=SCAN_INTERVAL
     )
     await mock_entity_platform.async_setup(
         {
@@ -82,11 +77,18 @@ async def test_async_setup_platform(m_async_get_clientsession, hass, aioclient_m
     await hass.async_block_till_done()
 
     m_async_get_clientsession.assert_called_once()
-    assert (
-        hass.data[DATA_ENTITY_PLATFORM][DOMAIN][0]
-        .entities.get("sensor.miningpoolhub_ethereum")
-        .miningpoolhub_api
-    )
+    result: MiningPoolHubSensor = hass.data[DATA_ENTITY_PLATFORM][DOMAIN][
+        0
+    ].entities.get("sensor.miningpoolhub_ethereum")
+    assert result.miningpoolhub_api
+    result_platform: Optional[EntityPlatform] = result.platform
+    assert result_platform is not None
+    assert result_platform.scan_interval == timedelta(minutes=1)
+    assert result.fiat_currency == "USD"
+    assert result.icon == "mdi:ethereum"
+    assert result.state is None
+    assert result.unit_of_measurement == "\u200b"
+    assert result.available
 
 
 async def test_async_update_success(
@@ -117,9 +119,11 @@ async def test_async_update_success(
     assert sensor.attrs == expected
     assert sensor.device_state_attributes == expected
     assert sensor.available is True
+    assert sensor.state == expected.get("current_hashrate")
 
 
-async def test_async_update_failed():
+@patch("custom_components.miningpoolhub.sensor._LOGGER.exception")
+async def test_async_update_failed(logger):
     """Tests a failed async_update."""
     miningpoolhub = MagicMock()
     miningpoolhub.async_get_dashboard = AsyncMock(side_effect=APIError)
@@ -129,3 +133,4 @@ async def test_async_update_failed():
 
     assert sensor.available is False
     assert sensor.attrs == {}
+    logger.assert_called_with("Error retrieving data from MiningPoolHub for sensor %s.", "MiningPoolHub Ethereum")
