@@ -64,7 +64,11 @@ async def test_async_setup_platform(m_async_get_clientsession, hass, aioclient_m
     )
     # noinspection PyTypeChecker
     mock_entity_platform: EntityPlatform = MockEntityPlatform(
-        hass=hass, domain="sensor", platform=mock_platform, platform_name=DOMAIN, scan_interval=SCAN_INTERVAL
+        hass=hass,
+        domain="sensor",
+        platform=mock_platform,
+        platform_name=DOMAIN,
+        scan_interval=SCAN_INTERVAL,
     )
     await mock_entity_platform.async_setup(
         {
@@ -80,6 +84,7 @@ async def test_async_setup_platform(m_async_get_clientsession, hass, aioclient_m
     result: MiningPoolHubSensor = hass.data[DATA_ENTITY_PLATFORM][DOMAIN][
         0
     ].entities.get("sensor.miningpoolhub_ethereum")
+    assert PLATFORM_SCHEMA is not None
     assert result.miningpoolhub_api
     result_platform: Optional[EntityPlatform] = result.platform
     assert result_platform is not None
@@ -133,4 +138,7 @@ async def test_async_update_failed(logger):
 
     assert sensor.available is False
     assert sensor.attrs == {}
-    logger.assert_called_with("Error retrieving data from MiningPoolHub for sensor %s.", "MiningPoolHub Ethereum")
+    logger.assert_called_with(
+        "Error retrieving data from MiningPoolHub for sensor %s.",
+        "MiningPoolHub Ethereum",
+    )
